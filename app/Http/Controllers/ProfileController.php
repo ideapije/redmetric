@@ -8,6 +8,7 @@ use App\Http\Requests\VillageUpdate;
 use App\Models\Village;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use Modules\Membership\Member;
 
@@ -16,9 +17,11 @@ class ProfileController extends Controller
     public function form(Request $request)
     {
         $user = collect($request->user()->load(['membership', 'village']));
+        $provinces = json_decode(File::get(resource_path('json/provinces.json')));
         return Inertia::render('ProfileForm', [
             'membership' => $user->get('membership'),
-            'village' => $user->get('village')
+            'village' => $user->get('village'),
+            'provinces' => $provinces
         ]);
     }
 
