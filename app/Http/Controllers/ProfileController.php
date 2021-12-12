@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PreviewRequest;
 use App\Http\Requests\UploadIdentity;
 use App\Http\Requests\VillageStore;
 use App\Http\Requests\VillageUpdate;
@@ -10,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 use Modules\Membership\Member;
 
 class ProfileController extends Controller
@@ -91,6 +93,19 @@ class ProfileController extends Controller
             return redirect()->route('dashboard')->with(['success' => 'Success!']);
         } catch (\Throwable $th) {
             return redirect()->route('dashboard')->with(['error' => 'Error!']);
+        }
+    }
+
+    public function preview(PreviewRequest $request)
+    {
+        $identity = $request->user()->membership->identities()->where('type', $request->type)->first();
+        if (!$identity) {
+            return redirect()->route('dashboard')->with(['error' => 'Error!']);
+        }
+        if (Storage::disk('local')->has($identity->document)) {
+            $filePath = Storage::disk('local')->getAdapter()->getPathPrefix();
+            $filePath .= $identity->document;
+            return response()->file($filePath);
         }
     }
 }

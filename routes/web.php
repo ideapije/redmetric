@@ -35,6 +35,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'verified']], fu
     Route::post('/profile/{membership}/upload', [ProfileController::class, 'upload'])->name('dashboard.profile.upload');
     Route::get('/submission/{period}/form/', [SubmissionController::class, 'form'])->name('dashboard.user.submission.form');
     Route::post('/submission/{period}/form/', [SubmissionController::class, 'store'])->name('dashboard.user.submission.store');
+    Route::get('/profile/index/preview', [ProfileController::class, 'preview'])->name('dashboard.profile.preview');
 });
 
 require __DIR__ . '/auth.php';

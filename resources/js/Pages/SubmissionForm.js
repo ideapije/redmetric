@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head, Link, useForm } from '@inertiajs/inertia-react';
 import { Button } from '@chakra-ui/button';
-import { Box, Grid, GridItem, HStack, Wrap } from '@chakra-ui/layout';
+import { Box, Grid, GridItem, HStack, VStack, Wrap } from '@chakra-ui/layout';
 import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
 import ValidationErrors from '@/Components/ValidationErrors';
-import Uploader from '@/Components/Uploader';
 import Step from '@/Components/Step';
 import { FormControl } from '@chakra-ui/form-control';
 import { Input } from '@chakra-ui/input';
@@ -30,18 +29,18 @@ export default function SubmissionForm(props) {
 
     const onHandleChange = (event) => {
         if (event.hasOwnProperty('target')) {
-            const matches = event.target.name?.match(/\[(.*?)\]/);
-            const index = parseInt(matches ? matches[1] : 0, 10)
+            const index = parseInt(event.target.id)
             const obj = {}
             Object.keys(data).forEach((k) => {
                 let values = data[k]
                 if (parseInt(k, 10) === page) {
                     values = values?.map((v, vx) => ({
                         ...v,
-                        value: vx === index ? event.target.value : v.value
-                    }))
+                        value: (vx === index && event.target.name === 'value') ? event.target.value : v.value,
+                        evidence: (vx === index && event.target.name === 'evidence') ? event.target.files[0] : null
+                    }));
                 }
-                obj[k] = values
+                obj[k] = values;
             })
             setData(obj);
         }
@@ -75,36 +74,55 @@ export default function SubmissionForm(props) {
                         </div>
                     </div>
                     <div className="mt-5 md:mt-0 md:col-span-2">
-                        <form onSubmit={submit}>
+                        <form onSubmit={submit} encType="multipart/form-data">
                             <div className="shadow sm:rounded-md sm:overflow-hidden">
                                 <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                                     <ValidationErrors errors={errors} />
                                     {inputs && inputs?.map((input, ix) => (
-                                        <HStack w="full" key={input.id}>
-                                            <Box w="70%">
-                                                {input.label}
-                                            </Box>
-                                            <Box w="30%">
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        name={`value[${ix}]`}
-                                                        value={data[page][ix]?.value}
-                                                        onChange={onHandleChange}
-                                                    />
-                                                    <Input
-                                                        type="hidden"
-                                                        name={`input[${ix}]`}
-                                                        defaultValue={data[page][ix]?.id}
-                                                    />
-                                                    <Input
-                                                        type="hidden"
-                                                        name={`criteria[${ix}]`}
-                                                        defaultValue={page}
-                                                    />
-                                                </FormControl>
-                                            </Box>
-                                        </HStack>
+                                        <VStack key={input.id}>
+                                            <HStack w="full">
+                                                <Box w="10%">
+                                                    <strong>{input?.indicator?.code}</strong>
+                                                </Box>
+                                                <Box w="70%">
+                                                    &nbsp;
+                                                    {input.label}
+                                                </Box>
+                                                <Box w="20%">
+                                                    <FormControl>
+                                                        <Input
+                                                            id={ix}
+                                                            type="number"
+                                                            name="value"
+                                                            value={data[page][ix]?.value}
+                                                            onChange={onHandleChange}
+                                                        />
+                                                        <Input
+                                                            type="hidden"
+                                                            name={`input[${ix}]`}
+                                                            defaultValue={data[page][ix]?.id}
+                                                        />
+                                                        <Input
+                                                            type="hidden"
+                                                            name={`criteria[${ix}]`}
+                                                            defaultValue={page}
+                                                        />
+                                                    </FormControl>
+                                                </Box>
+                                            </HStack>
+                                            {input?.indicator?.evidence && (
+                                                <HStack w="full">
+                                                    <Box w="60%">
+                                                        {input?.indicator?.evidence}
+                                                    </Box>
+                                                    <Box w="40%">
+                                                        <Input id={ix} type="file" name="evidence" onChange={onHandleChange}/>
+                                                        {input?.evidence?.file && <a href={input?.evidence?.file_url} target="_blank" rel="noopener noreferrer">Pratinjau</a>}
+                                                    </Box>
+                                                </HStack>
+                                            )}
+                                        </VStack>
+
                                     ))}
                                 </div>
                                 <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
