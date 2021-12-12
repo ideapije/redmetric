@@ -107,7 +107,7 @@ export default function Dashboard(props) {
                                     </div>
                                     <div className="p-3">
                                         <Center>
-                                            {identityCard ? identityCard?.document : <i>Not Uploaded yet</i>}
+                                            {identityCard ? <img src={route('dashboard.profile.preview', { type: 'idcard' })} alt={`${identityCard?.type} ${membership?.first_name}`} /> : <i>Not Uploaded yet</i>}
                                         </Center>
                                     </div>
                                 </div>
@@ -126,9 +126,23 @@ export default function Dashboard(props) {
                                         <span className="tracking-wide">Surat Tugas Desa</span>
                                     </div>
                                     <div className="p-3">
-                                        <Center>
-                                            {identityAssignment ? identityAssignment?.document : <i>Not Uploaded yet</i>}
-                                        </Center>
+                                        {
+                                            identityAssignment
+                                                ? (
+                                                    <div style={{ textAlign: 'center', minHeight: 280, display: 'flex' }}>
+                                                        <div style={{ margin: 'auto' }}>
+                                                            <h3>Berhasil terupload :)</h3>
+                                                            <br /><br />
+                                                            <a href={route('dashboard.profile.preview', { type: 'assigment' })} target="_blank" rel="noopener noreferrer">Pratinjau</a>
+                                                        </div>
+                                                    </div>
+                                                )
+                                                : (
+                                                    <Center>
+                                                        <Uploader url={route('dashboard.profile.upload', membership)} type="assigment" />
+                                                    </Center>
+                                                )
+                                        }
                                     </div>
                                 </div>
                             </div>
