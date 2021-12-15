@@ -89,7 +89,7 @@ export default function ProfileForm(props) {
                                     <GridItem colSpan={1}>
                                         <FormControl>
                                             <FormLabel>Kepala Desa / Lurah</FormLabel>
-                                            <Input name="head" value={data.name} onChange={handleOnChange} />
+                                            <Input name="head" value={data.head} onChange={handleOnChange} />
                                         </FormControl>
                                     </GridItem>
                                     <GridItem colSpan={1}>
