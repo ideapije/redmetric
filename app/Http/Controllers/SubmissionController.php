@@ -36,7 +36,8 @@ class SubmissionController extends Controller
                 $input      = $pivot->pluck('values')->flatten()->where('indicator_input_id', $item->id)->first();
                 $question   = collect($item)->merge([
                     'index' => $index,
-                    'value' => $input->value ?? ''
+                    'value' => $input->value ?? '',
+                    'evidence' => $pivot->where('indicator_id', $item->indicator_id)->first()->evidence ?? null
                 ]);
                 return $question;
             });
@@ -63,8 +64,8 @@ class SubmissionController extends Controller
             'user_id' => $request->user()->id,
             'period_id' => $period->id
         ]);
-        
-        $inputs = collect($request->all())->map(function($items){
+        $evidences  = collect($request->all())->flatten(1);
+        $inputs     = collect($request->all())->map(function($items){
             $data = collect($items)->map(function($item){
                 $item = collect($item)
                 ->only(['value', 'indicator_id'])
@@ -75,7 +76,7 @@ class SubmissionController extends Controller
         })->flatten(1);
         $indicators = $inputs->groupBy('indicator_id');
         $submission->indicators()->syncWithoutDetaching($indicators->keys()->toArray());
-        $submission->indicators->each(function ($indicator) use ($indicators) {
+        $submission->indicators->each(function ($indicator) use ($indicators, $evidences) {
             $values = $indicators->get($indicator->id);
             if ($values) {
                 $values = $values->map(function ($value) {
@@ -86,6 +87,13 @@ class SubmissionController extends Controller
                     $indicator->pivot->values()->whereIn('indicator_input_id', $values->pluck('indicator_input_id')->toArray())->delete();
                 }
                 $indicator->pivot->values()->createMany($values->toArray());
+                $findEvidence = $evidences->where('indicator_id', $indicator->id)->first();
+                if ($findEvidence['evidence'] ?? false) {
+                    $indicator->pivot->evidence()->create([
+                        'name' => $indicator->code,
+                        'file' => $findEvidence['evidence']->store('evidences', 'public')
+                    ]);
+                }
             }
         });
         return redirect()->route('dashboard.submission');

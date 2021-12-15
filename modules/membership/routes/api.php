@@ -11,7 +11,6 @@ Route::group(['prefix' => 'membership'], function () {
 
 Route::group(['prefix' => 'membership', 'middleware' => 'auth:api'], function () {
     Route::get('/', 'MembershipApiController@index');
-    Route::get('/preview-identity/{identity}', 'MembershipApiController@previewIdentity')->name('api.membership.preview-identity');
     Route::post('/update', 'MembershipApiController@update')->name('api.membership.update');
     Route::get('/logout', 'MembershipApiController@logout')->name('api.membership.logout');
 });
