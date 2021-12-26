@@ -24,6 +24,9 @@ import {
     Checkbox,
     Button,
     Box,
+    Flex,
+    Spacer,
+    HStack,
 } from '@chakra-ui/react';
 
 export default function ProfileForm(props) {
@@ -60,17 +63,17 @@ export default function ProfileForm(props) {
         <Authenticated
             auth={props.auth}
             errors={props.errors}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit Profile</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit Profil Kelurahan</h2>}
         >
             <Head title="Profile Form" />
             <ValidationErrors errors={errors} />
             <div className="container mx-auto my-5 p-5">
                 <div className="md:flex no-wrap md:-mx-2 ">
-                    <div className="w-full md:w-3/12 md:mx-2">
+                    <div className="w-full md:w-4/12 md:mx-2">
                         <UserCard {...{ membership, ...props }} />
                     </div>
 
-                    <div className="w-full md:w-9/12 mx-2 h-64 bg-white p-3 border-t-4 h-full">
+                    <div className="w-full md:w-8/12 mx-2 h-64 bg-white p-3 border-t-4 h-full">
                         <form onSubmit={submit}>
                             <VStack w="full" h="full" p={10} spacing={10} alignItems="flex-start">
                                 <SimpleGrid columns={2} columnGap={3} rowGap={6} w="full">
@@ -151,9 +154,17 @@ export default function ProfileForm(props) {
                                         </SimpleGrid>
                                     </GridItem>
                                     <GridItem colSpan={2}>
-                                        <Button type="submit" size="lg" w="full" disabled={processing}>
-                                            Simpan
-                                        </Button>
+                                        <HStack>
+                                            <Link href={route('dashboard')} mr={4}>
+                                                <Button size="lg" colorScheme="teal" variant="ghost">
+                                                    Batal
+                                                </Button>
+                                            </Link>
+                                            <Spacer />
+                                            <Button type="submit" size="lg" disabled={processing}>
+                                                Simpan
+                                            </Button>
+                                        </HStack>
                                     </GridItem>
                                 </SimpleGrid>
                             </VStack>
@@ -161,7 +172,7 @@ export default function ProfileForm(props) {
                     </div>
                 </div>
             </div>
-            
+
         </Authenticated>
     );
 }

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Period;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use Mockery\Matcher\Subset;
 
@@ -12,10 +14,16 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $user = collect($request->user()->load(['membership.identities', 'village']));
+        $user = $request->user()->load(['membership.identities', 'village']);
+        if (!$user->membership) {
+            $user->membership()->create([
+                'uuid' => Str::uuid()
+            ]);
+            return redirect()->route('dashboard');
+        }
         return Inertia::render('Dashboard', [
-            'membership' => $user->get('membership'),
-            'village' => $user->get('village')
+            'membership' => $user->membership,
+            'village' => $user->village
         ]);
     }
 
@@ -36,5 +44,10 @@ class DashboardController extends Controller
             ]);
         });
         return Inertia::render('Submission', ['submissions' => $submissions]);
+    }
+
+    public function download()
+    {
+        return response()->download(resource_path('docs/surat-pernyataan-peserta-red-metric.pdf'));
     }
 }

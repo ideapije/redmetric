@@ -87,10 +87,15 @@ class ProfileController extends Controller
     public function upload(UploadIdentity $request, Member $membership)
     {
         try {
+            $hasIdentity = $membership->identities()->where('type', $request->type)->first();
             $data = $request->except('document');
             $data['document'] = $request->document->store('identities');
+            if ($hasIdentity) {
+                Storage::disk('local')->delete($hasIdentity->document);
+                $hasIdentity->delete();
+            }
             $membership->identities()->create($data);
-            return redirect()->route('dashboard')->with(['success' => 'Success!']);
+            return redirect()->back();
         } catch (\Throwable $th) {
             return redirect()->route('dashboard')->with(['error' => 'Error!']);
         }
