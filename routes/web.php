@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubmissionController;
@@ -18,14 +17,10 @@ use App\Http\Controllers\SubmissionController;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/about-us', [WelcomeController::class, 'about'])->name('about-us');
+Route::get('/news', [WelcomeController::class, 'news'])->name('news');
+Route::get('/news/{post}/read', [WelcomeController::class, 'read'])->name('news.read');
 Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'verified']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/submission', [DashboardController::class, 'submission'])->name('dashboard.submission');

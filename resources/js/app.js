@@ -10,7 +10,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => `${title} - ${props?.appName}`,
     resolve: (name) => require(`./Pages/${name}`),
     setup({ el, App, props }) {
         return render(
