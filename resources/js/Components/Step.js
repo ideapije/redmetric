@@ -7,7 +7,7 @@ export default function Step({ items }) {
         <div className={classNames(
             'border-t-4', 'pt-4',
             {
-                'border-purple-500': active,
+                'border-red-500': active,
                 'border-gray-200': !active
             }
         )}>
@@ -15,7 +15,7 @@ export default function Step({ items }) {
                 'uppercase',
                 'font-bold',
                 {
-                    'text-purple-500': active,
+                    'text-red-500': active,
                     'text-gray-400': !active
                 })}
             >

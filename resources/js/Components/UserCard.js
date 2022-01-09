@@ -11,7 +11,7 @@ import { FaMapMarkerAlt, FaRegEdit, FaGlobe } from 'react-icons/fa';
 import { Link } from '@inertiajs/inertia-react';
 
 const UserCard = ({ village, auth }) => (
-    <div className="bg-white p-3 border-t-4 border-green-400">
+    <div className="bg-white p-3 border-t-4 border-red-400">
         <Stack>
             <small>Nama Desa</small>
             <h3 className="text-gray-900 font-bold text-xl leading-8 my-1">
@@ -34,15 +34,6 @@ const UserCard = ({ village, auth }) => (
             </p>
         </Stack>
         <Stack>
-            <Flex justify="space-between">
-                <Box />
-                <Box display="flex">
-                    <Icon as={FaRegEdit} mr={3} />
-                    <Link href={route('dashboard.profile.form')}>
-                        <Text color='blue.500'>Edit Data</Text>
-                    </Link>
-                </Box>
-            </Flex>
             <ul className="bg-gray-100 text-gray-600 hover:text-gray-700 hover:shadow py-2 px-3 mt-3 divide-y rounded shadow-sm">
                 <li className="flex items-center py-3">
                     <span>Tanggal Berdiri</span>

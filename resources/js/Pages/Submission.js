@@ -22,9 +22,9 @@ export default function Submission(props) {
         <Authenticated
             auth={props.auth}
             errors={props.errors}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Submission</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">{props.title || ''}</h2>}
         >
-            <Head title="Submission" />
+            <Head title={props.title || ''} />
             <VStack>
                 <Divider />
                 <Container maxW="container.xl" bg="white">

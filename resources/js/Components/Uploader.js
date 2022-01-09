@@ -1,5 +1,6 @@
 import React from 'react'
 import { useForm } from '@inertiajs/inertia-react'
+import { Button } from '@chakra-ui/react'
 
 export default function Uploader({ url, type = 'idcard' }) {
     const { data, setData, post, progress } = useForm({
@@ -20,7 +21,7 @@ export default function Uploader({ url, type = 'idcard' }) {
                     {progress.percentage}%
                 </progress>
             )}
-            <button type="submit">Submit</button>
+            <Button colorScheme="red" type="submit">Upload</Button>
         </form>
     )
 }

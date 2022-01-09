@@ -63,9 +63,9 @@ export default function ProfileForm(props) {
         <Authenticated
             auth={props.auth}
             errors={props.errors}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit Profil Kelurahan</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">{props.title || ''}</h2>}
         >
-            <Head title="Profile Form" />
+            <Head title={props.title || ''} />
             <ValidationErrors errors={errors} />
             <div className="container mx-auto my-5 p-5">
                 <div className="md:flex no-wrap md:-mx-2 ">
@@ -155,13 +155,8 @@ export default function ProfileForm(props) {
                                     </GridItem>
                                     <GridItem colSpan={2}>
                                         <HStack>
-                                            <Link href={route('dashboard')} mr={4}>
-                                                <Button size="lg" colorScheme="teal" variant="ghost">
-                                                    Batal
-                                                </Button>
-                                            </Link>
                                             <Spacer />
-                                            <Button type="submit" size="lg" disabled={processing}>
+                                            <Button colorScheme="red" type="submit" size="lg" disabled={processing}>
                                                 Simpan
                                             </Button>
                                         </HStack>

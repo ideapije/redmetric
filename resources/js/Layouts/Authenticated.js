@@ -16,16 +16,19 @@ export default function Authenticated({ auth, header, children }) {
                         <div className="flex">
                             <div className="flex-shrink-0 flex items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto text-gray-500" />
+                                    <img src="/images/logo.png" alt="RED Metric" className="w-auto h-9" />
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                    Data Kelurahan
+                                </NavLink>
+                                <NavLink href={route('dashboard.uploads')} active={route().current('dashboard.uploads')}>
+                                    Upload Dokumen
                                 </NavLink>
                                 <NavLink href={route('dashboard.submission')} active={route().current('dashboard.submission')}>
-                                    Submission
+                                    Join Red Metric
                                 </NavLink>
                             </div>
                         </div>
@@ -95,9 +98,20 @@ export default function Authenticated({ auth, header, children }) {
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                            Data Kelurahan
                         </ResponsiveNavLink>
                     </div>
+                    <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('dashboard.uploads')} active={route().current('dashboard.uploads')}>
+                            Upload Dokumen
+                        </ResponsiveNavLink>
+                    </div>
+                    <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('dashboard.submission')} active={route().current('dashboard.submission')}>
+                            Join Red Metric
+                        </ResponsiveNavLink>
+                    </div>
+
 
                     <div className="pt-4 pb-1 border-t border-gray-200">
                         <div className="px-4">

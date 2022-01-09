@@ -1,23 +1,50 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head, Link, useForm } from '@inertiajs/inertia-react';
 import { Button } from '@chakra-ui/button';
 import { Box, Grid, GridItem, HStack, VStack, Wrap } from '@chakra-ui/layout';
-import { Divider, InputGroup, InputAddon, InputRightAddon } from '@chakra-ui/react';
-import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
+import {
+    Flex,
+    Spacer,
+    Stack,
+    Divider,
+    InputGroup,
+    InputAddon,
+    InputRightAddon,
+    Text,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
+} from '@chakra-ui/react';
+import {
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    EmailIcon,
+    CheckIcon
+} from '@chakra-ui/icons';
 import ValidationErrors from '@/Components/ValidationErrors';
 import Step from '@/Components/Step';
 import { FormControl } from '@chakra-ui/form-control';
+import { MdSend } from 'react-icons/md'
 import { Input } from '@chakra-ui/input';
 
 export default function SubmissionForm(props) {
     const { questions, period, steps } = props;
     const [page, setPage] = useState(1);
     const [tabs, setTabs] = useState(steps)
+
+    const submitRef = useRef(null)
+    const publishRef = useRef(null)
     const inputs = questions[page];
     const lastKey = parseInt(Object.keys(questions).pop(), 10);
 
-    const { data, setData, post, processing, errors } = useForm(questions);
+    const { data, setData, post, put, processing, errors } = useForm(questions);
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleOnChangePage = (page) => {
         const modifiedTabs = tabs.map((tab) => ({
@@ -51,6 +78,16 @@ export default function SubmissionForm(props) {
         e.preventDefault();
         post(route('dashboard.user.submission.store', period));
     }
+    const submitPublish = (e) => {
+        e.preventDefault();
+        put(route('dashboard.user.submission.publish'), period);
+    }
+    const handleOnClickSave = () => {
+        submitRef.current.click();
+    }
+    const handleOnClickPublish = () => {
+        publishRef.current.click();
+    }
     return (
         <Authenticated
             auth={props.auth}
@@ -65,9 +102,11 @@ export default function SubmissionForm(props) {
                 </div>
             </div>
             <div className="container mx-auto my-5 p-5">
-                <form onSubmit={submit} encType="multipart/form-data">
-                    <div className="shadow sm:rounded-md sm:overflow-hidden">
-                        <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
+
+                <div className="shadow sm:rounded-md sm:overflow-hidden">
+                    <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
+                        <form onSubmit={submit} encType="multipart/form-data" method="post">
+                            <input type="hidden" name="_token" value={props.csrf_token} />
                             <ValidationErrors errors={errors} />
                             {inputs && inputs?.map((input, ix) => (
                                 <VStack key={input.id}>
@@ -121,21 +160,31 @@ export default function SubmissionForm(props) {
                                     <Divider orientation="horizontal" />
                                 </VStack>
                             ))}
-                        </div>
-                        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                            <Grid templateColumns="repeat(5, 1fr)" gap={4}>
-                                <GridItem colSpan={2} h="10" >
-                                    <Wrap align="left">
-                                        <Button
-                                            variant="ghost"
-                                            disabled={page === 1}
-                                            leftIcon={<ArrowLeftIcon />}
-                                            onClick={() => handleOnChangePage(page - 1)}>
-                                            Previous
+                            <button type="submit" style={{ opacity: 0 }} ref={submitRef}></button>
+                        </form>
+                    </div>
+                    <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                        <Flex>
+                            <Box p='4'>
+                                <Button
+                                    variant="ghost"
+                                    disabled={page === 1}
+                                    leftIcon={<ArrowLeftIcon />}
+                                    onClick={() => handleOnChangePage(page - 1)}>
+                                    Previous
+                                </Button>
+                            </Box>
+                            <Spacer />
+                            <Box p='4'>
+                                <Stack direction='row' spacing={6}>
+                                    <Button onClick={handleOnClickSave} leftIcon={<CheckIcon />} colorScheme="blue" variant='outline'>
+                                        Simpan
+                                    </Button>
+                                    {(lastKey === page) && (
+                                        <Button onClick={onOpen} rightIcon={<MdSend />} colorScheme='red' variant='solid'>
+                                            Publish
                                         </Button>
-                                    </Wrap>
-                                </GridItem>
-                                <GridItem colStart={4} colEnd={6} h="10">
+                                    )}
                                     <Button
                                         disabled={(lastKey === page)}
                                         variant="ghost"
@@ -143,18 +192,37 @@ export default function SubmissionForm(props) {
                                         onClick={() => handleOnChangePage(page + 1)}>
                                         Next
                                     </Button>
-                                    {(lastKey === page)
-                                        ? (
-                                            <Button type="submit" className="ml-4" disabled={processing}>
-                                                Submit
-                                            </Button>
-                                        ) : null
-                                    }
-                                </GridItem>
-                            </Grid>
-                        </div>
+                                </Stack>
+                            </Box>
+                        </Flex>
                     </div>
+                </div>
+                <form onSubmit={submitPublish} method="post">
+                    <input type="hidden" name="_token" value={props.csrf_token} />
+                    <input type="hidden" name="period" value={period.id || 0} />
+                    <button type="submit" style={{ opacity: 0 }} ref={publishRef}></button>
                 </form>
+                <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>Publish Red Metric</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <Text fontSize='xl'>Apakah Anda yakin?</Text>
+                            <Text fontSize='lg'>
+                                Data yang terkirim tidak dapat di edit setelah <b>Publish Red Metric</b>
+                            </Text>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button colorScheme='ghost' mr={3} onClick={onClose}>
+                                Batal
+                            </Button>
+                            <Button rightIcon={<MdSend />} colorScheme='red' variant='solid' onClick={handleOnClickPublish}>
+                                Publish
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
             </div>
         </Authenticated>
     );

@@ -15,15 +15,29 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user()->load(['membership.identities', 'village']);
-        if (!$user->membership) {
+        if (!$user->membership()->count()) {
             $user->membership()->create([
                 'uuid' => Str::uuid()
             ]);
             return redirect()->route('dashboard');
         }
-        return Inertia::render('Dashboard', [
+        $user = collect($user);
+        $provinces = json_decode(File::get(resource_path('json/provinces.json')));
+        return Inertia::render('ProfileForm', [
+            'membership' => $user->get('membership'),
+            'village' => $user->get('village'),
+            'provinces' => $provinces,
+            'title' => 'Data Kelurahan'
+        ]);
+    }
+
+    public function uploads(Request $request)
+    {
+        $user = $request->user()->load(['membership.identities', 'village']);
+        return Inertia::render('DashboardUploads', [
             'membership' => $user->membership,
-            'village' => $user->village
+            'village' => $user->village,
+            'title' => 'Upload Dokumen'
         ]);
     }
 
@@ -43,7 +57,10 @@ class DashboardController extends Controller
                 'submissions' => collect($period->submissions)->first()
             ]);
         });
-        return Inertia::render('Submission', ['submissions' => $submissions]);
+        return Inertia::render('Submission', [
+            'submissions' => $submissions,
+            'title' => 'Join Red Metric'
+        ]);
     }
 
     public function download()
