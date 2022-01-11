@@ -6,6 +6,7 @@ use App\Models\IndicatorCriteria;
 use App\Models\Period;
 use App\Models\Submission;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 
 class SubmissionController extends Controller
@@ -67,10 +68,11 @@ class SubmissionController extends Controller
         $evidences  = collect($request->all())->flatten(1);
         $inputs     = collect($request->all())->map(function ($items) {
             $data = collect($items)->map(function ($item) {
-                $item = collect($item)
+                return collect($item)
                     ->only(['value', 'indicator_id'])
-                    ->merge(['indicator_input_id' => $item['id']]);
-                return $item;
+                    ->merge([
+                        'indicator_input_id' => $item['id']
+                    ]);
             });
             return $data;
         })->flatten(1);
@@ -88,7 +90,7 @@ class SubmissionController extends Controller
                 }
                 $indicator->pivot->values()->createMany($values->toArray());
                 $findEvidence = $evidences->where('indicator_id', $indicator->id)->first();
-                if ($findEvidence['evidence']) {
+                if ($findEvidence['evidence'] instanceof UploadedFile) {
                     $indicator->pivot->evidence()->create([
                         'name' => $indicator->code,
                         'file' => $findEvidence['evidence']->store('evidences', 'public')
