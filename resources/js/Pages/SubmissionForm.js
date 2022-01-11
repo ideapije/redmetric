@@ -20,6 +20,8 @@ import {
     ModalBody,
     ModalCloseButton,
     useDisclosure,
+    Link as BtnLink,
+    Icon
 } from '@chakra-ui/react';
 import {
     ArrowLeftIcon,
@@ -30,7 +32,7 @@ import {
 import ValidationErrors from '@/Components/ValidationErrors';
 import Step from '@/Components/Step';
 import { FormControl } from '@chakra-ui/form-control';
-import { MdSend } from 'react-icons/md'
+import { MdSend, MdAttachFile } from 'react-icons/md'
 import { Input } from '@chakra-ui/input';
 
 export default function SubmissionForm(props) {
@@ -80,7 +82,7 @@ export default function SubmissionForm(props) {
     }
     const submitPublish = (e) => {
         e.preventDefault();
-        put(route('dashboard.user.submission.publish'), period);
+        put(route('dashboard.user.submission.publish', period));
     }
     const handleOnClickSave = () => {
         submitRef.current.click();
@@ -153,7 +155,12 @@ export default function SubmissionForm(props) {
                                             </Box>
                                             <Box w="25%">
                                                 <Input id={ix} type="file" name="evidence" onChange={onHandleChange} />
-                                                {input?.evidence?.file && <a href={input?.evidence?.file_url} target="_blank" rel="noopener noreferrer">Pratinjau</a>}
+                                                
+                                                {input?.evidence?.file && (
+                                                    <BtnLink color='red.500' href={input?.evidence?.file_url} isExternal>
+                                                        <Icon as={MdAttachFile} /> Lihat Dokumen
+                                                    </BtnLink>
+                                                )}
                                             </Box>
                                         </HStack>
                                     )}

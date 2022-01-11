@@ -65,11 +65,11 @@ class SubmissionController extends Controller
             'period_id' => $period->id
         ]);
         $evidences  = collect($request->all())->flatten(1);
-        $inputs     = collect($request->all())->map(function($items){
-            $data = collect($items)->map(function($item){
+        $inputs     = collect($request->all())->map(function ($items) {
+            $data = collect($items)->map(function ($item) {
                 $item = collect($item)
-                ->only(['value', 'indicator_id'])
-                ->merge(['indicator_input_id' => $item['id']]);
+                    ->only(['value', 'indicator_id'])
+                    ->merge(['indicator_input_id' => $item['id']]);
                 return $item;
             });
             return $data;
@@ -88,7 +88,7 @@ class SubmissionController extends Controller
                 }
                 $indicator->pivot->values()->createMany($values->toArray());
                 $findEvidence = $evidences->where('indicator_id', $indicator->id)->first();
-                if ($findEvidence['evidence'] ?? false) {
+                if ($findEvidence['evidence']) {
                     $indicator->pivot->evidence()->create([
                         'name' => $indicator->code,
                         'file' => $findEvidence['evidence']->store('evidences', 'public')
@@ -96,7 +96,7 @@ class SubmissionController extends Controller
                 }
             }
         });
-        return redirect()->route('dashboard.submission');
+        return redirect()->back();
     }
 
     public function publish(Request $request, Period $period)
