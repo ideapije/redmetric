@@ -21,6 +21,9 @@ import { Button } from '@chakra-ui/button';
 import Uploader from '@/Components/Uploader';
 import UserCard from '@/Components/UserCard';
 import Title from '@/Components/Title';
+import JuryCard from '@/Components/JuryCard';
+import JuryForm from './JuryForm';
+import ProfileForm from './ProfileForm';
 
 const usePreviousValue = value => {
     const ref = useRef();
@@ -30,41 +33,37 @@ const usePreviousValue = value => {
     return ref.current;
 };
 
-export default function Dashboard(props) {
-    const [editDoc, setEditDoc] = useState(null)
-
-    const { membership, village } = props;
-    
-    const identityCard = membership?.identities?.find((i) => i.type === 'idcard');
-    const identityAssignment = membership?.identities?.find((i) => i.type === 'assigment');
-
-    const prevIdC = usePreviousValue(identityCard);
-    const prevIdA = usePreviousValue(identityAssignment);
-
-    useEffect(() => {
-        if (
-            (editDoc && (identityCard?.document !== prevIdC?.document)) ||
-            (editDoc && (identityAssignment?.document !== prevIdA?.document))
-        ) {
-            setEditDoc(null)
-            window.location.reload()
-        }
-    }, [identityCard, identityAssignment, prevIdA, prevIdC, editDoc])
+export default function Dashboard({
+    membership,
+    provinces,
+    village,
+    errors,
+    title,
+    auth
+}) {
     return (
         <Authenticated
-            auth={props.auth}
-            errors={props.errors}
-            header={<Title>{props.title || ''}</Title>}
+            auth={auth}
+            errors={errors}
+            header={<Title>{title || ''}</Title>}
         >
-            <Head title={props.title || ''} />
+            <Head title={title || ''} />
             <div className="container mx-auto my-5 p-5">
                 <div className="md:flex no-wrap md:-mx-2 ">
                     <div className="w-full md:w-4/12 md:mx-2">
-                        <UserCard {...{ membership, village }} />
+                        {
+                            auth?.user?.role_id === 3
+                                ? <JuryCard {...{ membership }} />
+                                : <UserCard {...{ membership, village }} />
+                        }
                     </div>
 
-                    <div className="w-full md:w-8/12 mx-2 h-64 p-3">
-                        
+                    <div className="w-full md:w-8/12 mx-2 bg-white p-3 border-t-4 h-full">
+                        {
+                            auth?.user?.role_id === 3
+                                ? <JuryForm {...{ membership, provinces, auth }} />
+                                : <ProfileForm {...{ membership, provinces, village, auth }} />
+                        }
                     </div>
                 </div>
             </div>

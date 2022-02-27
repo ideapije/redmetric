@@ -185,7 +185,7 @@ export default function SubmissionForm(props) {
                             <Box p='4'>
                                 <Stack direction='row' spacing={6}>
                                     <Button onClick={handleOnClickSave} leftIcon={<CheckIcon />} colorScheme="blue" variant='outline'>
-                                        Simpan
+                                        Save
                                     </Button>
                                     {(lastKey === page) && (
                                         <Button onClick={onOpen} rightIcon={<MdSend />} colorScheme='red' variant='solid'>

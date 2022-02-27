@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\JuryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubmissionController;
 
@@ -32,8 +33,10 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'verified']], fu
     Route::get('/submission/{period}/form', [SubmissionController::class, 'form'])->name('dashboard.user.submission.form');
     Route::post('/submission/{period}/form', [SubmissionController::class, 'store'])->name('dashboard.user.submission.store');
     Route::put('/submission/{period}/publish', [SubmissionController::class, 'publish'])->name('dashboard.user.submission.publish');
-    Route::get('/profile/index/preview', [ProfileController::class, 'preview'])->name('dashboard.profile.preview');
+    Route::get('/profile/{identity}/preview', [ProfileController::class, 'preview'])->name('dashboard.profile.preview');
     Route::get('/download', [DashboardController::class, 'download'])->name('dashboard.download');
+    Route::put('/jury/{member}', [JuryController::class, 'update'])->name('dashboard.jury.update');
+    Route::get('/jury', [JuryController::class, 'index'])->name('dashboard.jury.index');
 });
 
 require __DIR__ . '/auth.php';

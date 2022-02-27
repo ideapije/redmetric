@@ -110,12 +110,17 @@ class SubmissionController extends Controller
         $configFramework = config('redmetric-framework');
         $user = $submission->user;
         $submission->indicators->map(function ($indicator) use ($configFramework, $user) {
-            $userDetails = collect($user->load('village'));
-            $values = collect($indicator->pivot->values ?? [])->pluck('value');
-            $formula = collect($configFramework[$indicator->code] ?? [])->map(function ($config, $key) use ($values, $userDetails) {
-                return collect(['*', '+', '/', '(', ')'])->contains($config)
-                    ? $config
-                    : $values[$config] ?? data_get($userDetails, $config, null) ?? $config;
+            $userDetails    = collect($user->load('village'));
+            $values         = collect($indicator->pivot->values ?? [])->pluck('value');
+            $formula        = collect($configFramework[$indicator->code] ?? [])->map(function ($config, $key) use ($values, $userDetails) {
+                $item       = $values[$config] ?? $config;
+                if ($config === 0) {
+                    $item = $values[0];
+                }
+                if (strpos($config, 'village') !== false) {
+                    $item = data_get($userDetails, $config, null);
+                }
+                return $item;
             });
             $result = $formula->join('');
             $result = number_format(eval("return $result;"), 2);
@@ -124,7 +129,7 @@ class SubmissionController extends Controller
             ]);
             return [
                 'code' => $indicator->code,
-                'formula' => $formula,
+                'formula' => $formula->join(''),
                 'values' => $values,
                 'result' => $result,
                 'indicator_result' => data_get(collect($indicator->pivot), 'result', null)

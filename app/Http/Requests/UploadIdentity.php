@@ -24,7 +24,7 @@ class UploadIdentity extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'required|in:idcard,assigment',
+            'type' => 'required|in:idcard,assigment,npwp',
             'number' => 'sometimes|nullable',
             'document' => 'required|file'
         ];

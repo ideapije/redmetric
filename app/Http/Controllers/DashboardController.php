@@ -23,11 +23,12 @@ class DashboardController extends Controller
         }
         $user = collect($user);
         $provinces = json_decode(File::get(resource_path('json/provinces.json')));
-        return Inertia::render('ProfileForm', [
+        return Inertia::render('Dashboard', [
             'membership' => $user->get('membership'),
             'village' => $user->get('village'),
             'provinces' => $provinces,
-            'title' => 'Data Kelurahan'
+            'title' => $request->user()->role->name === 'jury' ? 'Data Diri Jury' : 'Data Kelurahan',
+            'jury' => $user->get('jury')
         ]);
     }
 

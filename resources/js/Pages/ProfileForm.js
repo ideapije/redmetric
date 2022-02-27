@@ -60,114 +60,95 @@ export default function ProfileForm(props) {
         village?.id ? put(route('dashboard.profile.update', village.id)) : post(route('dashboard.profile.store'));
     }
     return (
-        <Authenticated
-            auth={props.auth}
-            errors={props.errors}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">{props.title || ''}</h2>}
-        >
-            <Head title={props.title || ''} />
-            <ValidationErrors errors={errors} />
-            <div className="container mx-auto my-5 p-5">
-                <div className="md:flex no-wrap md:-mx-2 ">
-                    <div className="w-full md:w-4/12 md:mx-2">
-                        <UserCard {...{ membership, ...props }} />
-                    </div>
-
-                    <div className="w-full md:w-8/12 mx-2 h-64 bg-white p-3 border-t-4 h-full">
-                        <form onSubmit={submit}>
-                            <VStack w="full" h="full" p={10} spacing={10} alignItems="flex-start">
-                                <SimpleGrid columns={2} columnGap={3} rowGap={6} w="full">
-                                    <GridItem colSpan={1}>
-                                        <FormControl isRequired>
-                                            <FormLabel>Nama Desa / Kelurahan</FormLabel>
-                                            <Input name="name" value={data.name} onChange={handleOnChange} />
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={1}>
-                                        <FormControl>
-                                            <FormLabel>Tanggal Berdiri</FormLabel>
-                                            <ReactDatePicker dateFormat="dd-MM-yyyy" name="since" selected={data.since} onChange={handleOnChange} />
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={1}>
-                                        <FormControl>
-                                            <FormLabel>Kepala Desa / Lurah</FormLabel>
-                                            <Input name="head" value={data.head} onChange={handleOnChange} />
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={1}>
-                                        <FormControl>
-                                            <FormLabel>Sekretaris Desa / Lurah</FormLabel>
-                                            <Input name="secretary" value={data.secretary} onChange={handleOnChange} />
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={2}>
-                                        <FormControl>
-                                            <FormLabel>Website</FormLabel>
-                                            <Input name="website" value={data.website} onChange={handleOnChange} />
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={2}>
-                                        <FormControl>
-                                            <FormLabel>Alamat Kelurahan</FormLabel>
-                                            <Textarea name="address" value={data.address} onChange={handleOnChange} />
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={1}>
-                                        <FormControl isRequired>
-                                            <FormLabel>Luas Wilayah</FormLabel>
-                                            <InputGroup>
-                                                <Input type='number' name="area" value={data.area} onChange={handleOnChange} />
-                                                <InputRightAddon children='km²' />
-                                            </InputGroup>
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={1}>
-                                        <FormControl>
-                                            <FormLabel>Provinsi</FormLabel>
-                                            <Select defaultValue={data.province} name="province" onChange={handleOnChange}>
-                                                {provinces?.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
-                                            </Select>
-                                        </FormControl>
-                                    </GridItem>
-                                    <GridItem colSpan={2}>
-                                        <SimpleGrid columns={3} columnGap={4}>
-                                            <GridItem colSpan={1}>
-                                                <FormControl isRequired>
-                                                    <FormLabel>Jumlah Laki-laki</FormLabel>
-                                                    <Input type="number" name="amount_male" value={data.amount_male} onChange={handleOnChange} />
-                                                </FormControl>
-                                            </GridItem>
-                                            <GridItem colSpan={1}>
-                                                <FormControl isRequired>
-                                                    <FormLabel>Jumlah Perempuan</FormLabel>
-                                                    <Input type="number" name="amount_female" value={data.amount_female} onChange={handleOnChange} />
-                                                </FormControl>
-                                            </GridItem>
-                                            <GridItem colSpan={1}>
-                                                <FormControl isRequired>
-                                                    <FormLabel>Jumlah Usia Produktif</FormLabel>
-                                                    <Input type="number" name="amount_productive_age" value={data.amount_productive_age} onChange={handleOnChange} />
-                                                    <FormHelperText>Usia 15 - 60 Th</FormHelperText>
-                                                </FormControl>
-                                            </GridItem>
-                                        </SimpleGrid>
-                                    </GridItem>
-                                    <GridItem colSpan={2}>
-                                        <HStack>
-                                            <Spacer />
-                                            <Button colorScheme="red" type="submit" size="lg" disabled={processing}>
-                                                Simpan
-                                            </Button>
-                                        </HStack>
-                                    </GridItem>
-                                </SimpleGrid>
-                            </VStack>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-        </Authenticated>
+        <form onSubmit={submit}>
+            <VStack w="full" h="full" p={10} spacing={10} alignItems="flex-start">
+                <SimpleGrid columns={2} columnGap={3} rowGap={6} w="full">
+                    <GridItem colSpan={1}>
+                        <FormControl isRequired>
+                            <FormLabel>Nama Desa / Kelurahan</FormLabel>
+                            <Input name="name" value={data.name} onChange={handleOnChange} />
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                        <FormControl>
+                            <FormLabel>Tanggal Berdiri</FormLabel>
+                            <ReactDatePicker dateFormat="dd-MM-yyyy" name="since" selected={data.since} onChange={handleOnChange} />
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                        <FormControl>
+                            <FormLabel>Kepala Desa / Lurah</FormLabel>
+                            <Input name="head" value={data.head} onChange={handleOnChange} />
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                        <FormControl>
+                            <FormLabel>Sekretaris Desa / Lurah</FormLabel>
+                            <Input name="secretary" value={data.secretary} onChange={handleOnChange} />
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                        <FormControl>
+                            <FormLabel>Website</FormLabel>
+                            <Input name="website" value={data.website} onChange={handleOnChange} />
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                        <FormControl>
+                            <FormLabel>Alamat Kelurahan</FormLabel>
+                            <Textarea name="address" value={data.address} onChange={handleOnChange} />
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                        <FormControl isRequired>
+                            <FormLabel>Luas Wilayah</FormLabel>
+                            <InputGroup>
+                                <Input type='number' name="area" value={data.area} onChange={handleOnChange} />
+                                <InputRightAddon children='km²' />
+                            </InputGroup>
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                        <FormControl>
+                            <FormLabel>Provinsi</FormLabel>
+                            <Select defaultValue={data.province} name="province" onChange={handleOnChange}>
+                                {provinces?.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
+                            </Select>
+                        </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                        <SimpleGrid columns={3} columnGap={4}>
+                            <GridItem colSpan={1}>
+                                <FormControl isRequired>
+                                    <FormLabel>Jumlah Laki-laki</FormLabel>
+                                    <Input type="number" name="amount_male" value={data.amount_male} onChange={handleOnChange} />
+                                </FormControl>
+                            </GridItem>
+                            <GridItem colSpan={1}>
+                                <FormControl isRequired>
+                                    <FormLabel>Jumlah Perempuan</FormLabel>
+                                    <Input type="number" name="amount_female" value={data.amount_female} onChange={handleOnChange} />
+                                </FormControl>
+                            </GridItem>
+                            <GridItem colSpan={1}>
+                                <FormControl isRequired>
+                                    <FormLabel>Jumlah Usia Produktif</FormLabel>
+                                    <Input type="number" name="amount_productive_age" value={data.amount_productive_age} onChange={handleOnChange} />
+                                    <FormHelperText>Usia 15 - 60 Th</FormHelperText>
+                                </FormControl>
+                            </GridItem>
+                        </SimpleGrid>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                        <HStack>
+                            <Spacer />
+                            <Button colorScheme="red" type="submit" size="lg" disabled={processing}>
+                                Save
+                            </Button>
+                        </HStack>
+                    </GridItem>
+                </SimpleGrid>
+            </VStack>
+        </form>
     );
 }

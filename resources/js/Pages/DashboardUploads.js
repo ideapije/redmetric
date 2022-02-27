@@ -34,22 +34,26 @@ export default function DashboardUploads(props) {
     const [editDoc, setEditDoc] = useState(null)
 
     const { membership, village } = props;
-    
+
     const identityCard = membership?.identities?.find((i) => i.type === 'idcard');
     const identityAssignment = membership?.identities?.find((i) => i.type === 'assigment');
+    const identityNpwp = membership?.identities?.find((i) => i.type === 'npwp');
 
-    const prevIdC = usePreviousValue(identityCard);
     const prevIdA = usePreviousValue(identityAssignment);
+    const prevIdB = usePreviousValue(identityNpwp);
+    const prevIdC = usePreviousValue(identityCard);
 
     useEffect(() => {
         if (
-            (editDoc && (identityCard?.document !== prevIdC?.document)) ||
-            (editDoc && (identityAssignment?.document !== prevIdA?.document))
+
+            (editDoc && (identityAssignment?.document !== prevIdA?.document)) ||
+            (editDoc && (identityNpwp?.document !== prevIdB?.document)) ||
+            (editDoc && (identityCard?.document !== prevIdC?.document))
         ) {
             setEditDoc(null)
             window.location.reload()
         }
-    }, [identityCard, identityAssignment, prevIdA, prevIdC, editDoc])
+    }, [identityCard, identityAssignment, prevIdA, prevIdB, prevIdC, editDoc])
     return (
         <Authenticated
             auth={props.auth}
@@ -73,7 +77,7 @@ export default function DashboardUploads(props) {
                             pos={'relative'}
                             zIndex={1}
                         >
-                            {(identityCard && identityAssignment) && (
+                            {(identityCard && (identityAssignment || identityNpwp)) && (
                                 <Flex justify="space-between">
                                     <Box />
                                     <Box display="flex">
@@ -96,7 +100,7 @@ export default function DashboardUploads(props) {
                                         (identityCard && !editDoc)
                                             ? (
                                                 <>
-                                                    <Image src={route('dashboard.profile.preview', { type: 'idcard' })} alt="ID card" borderRadius={10} w={300} />
+                                                    <Image src={route('dashboard.profile.preview', { type: 'idcard', identity: identityCard })} alt="ID card" borderRadius={10} w={300} />
                                                 </>
                                             )
                                             : (
@@ -115,7 +119,7 @@ export default function DashboardUploads(props) {
                                         letterSpacing='wide'
                                         color='teal.600'
                                     >
-                                        Kartu Identitas (KTP) Kepala Desa
+                                        {props.auth.user.role_id === 3 ? 'Kartu Identitas (KTP) Jury' : 'Kartu Identitas (KTP) Kepala Desa'}
                                     </Text>
                                     <Text mt={2} color='gray.500'>
                                         Kami pastikan data KTP yang telah terupload aman dan tidak ada penyalahgunaan.
@@ -126,7 +130,6 @@ export default function DashboardUploads(props) {
                                         mb={3}
                                         display='block'
                                         fontSize='lg'
-                                        lineHeight='normal'
                                         fontWeight='semibold'
                                         href={'https://watermarkktp.com/'}
                                         target={'_blank'}
@@ -136,43 +139,93 @@ export default function DashboardUploads(props) {
                                 </Box>
                             </Box>
                             <Divider orientation='horizontal' />
-                            <Box p={4} display={{ md: 'flex' }}>
-                                <Box flexShrink={0} pt={6}>
-                                    {
-                                        (identityAssignment && !editDoc)
-                                            ? (
-                                                <object data={route('dashboard.profile.preview', { type: 'assigment' })} type="application/pdf">
-                                                    <div>No online PDF viewer installed</div>
-                                                </object>
-                                            )
-                                            : (
-                                                <FormControl isRequired>
-                                                    <FormLabel htmlFor='idcard'>Upload Surat Pernyataan</FormLabel>
-                                                    <Uploader url={route('dashboard.profile.upload', membership)} type="assigment" />
-                                                </FormControl>
-                                            )
-                                    }
+
+                            {props.auth.user.role_id === 2 && (
+                                <Box p={4} display={{ md: 'flex' }}>
+                                    <Box flexShrink={0} pt={6}>
+                                        {
+                                            (identityAssignment && !editDoc)
+                                                ? (
+                                                    <object data={route('dashboard.profile.preview', { type: 'assigment', identity: identityAssignment })} type="application/pdf">
+                                                        <div>No online PDF viewer installed</div>
+                                                    </object>
+                                                )
+                                                : (
+                                                    <FormControl isRequired>
+                                                        <FormLabel htmlFor='idcard'>Upload Surat Pernyataan</FormLabel>
+                                                        <Uploader url={route('dashboard.profile.upload', membership)} type="assigment" />
+                                                    </FormControl>
+                                                )
+                                        }
+                                    </Box>
+                                    <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
+                                        <Text
+                                            fontWeight='bold'
+                                            textTransform='uppercase'
+                                            fontSize='sm'
+                                            letterSpacing='wide'
+                                            color='teal.600'
+                                        >
+                                            Surat Pernyataan
+                                        </Text>
+                                        <Text mt={1} color='gray.500'>
+                                            Berkas surat pernyataan dapat diisi sesuai dengan template yang ada pada link download dibawah ini
+                                        </Text>
+                                        <Link href={route('dashboard.download')} mb={3}>
+                                            <Button mt={2} mb={3} colorScheme='blue'>
+                                                Download Template Surat Pernyataan
+                                            </Button>
+                                        </Link>
+                                    </Box>
                                 </Box>
-                                <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
-                                    <Text
-                                        fontWeight='bold'
-                                        textTransform='uppercase'
-                                        fontSize='sm'
-                                        letterSpacing='wide'
-                                        color='teal.600'
-                                    >
-                                        Surat Pernyataan
-                                    </Text>
-                                    <Text mt={1} color='gray.500'>
-                                        Berkas surat pernyataan dapat diisi sesuai dengan template yang ada pada link download dibawah ini
-                                    </Text>
-                                    <Link href={route('dashboard.download')} mb={3}>
-                                        <Button mt={2} mb={3} colorScheme='blue'>
-                                            Download Template Surat Pernyataan
-                                        </Button>
-                                    </Link>
+                            )}
+
+                            {props.auth.user.role_id === 3 && (
+                                <Box p={4} display={{ md: 'flex' }}>
+                                    <Box flexShrink={0} pt={6}>
+                                        {
+                                            (identityNpwp && !editDoc)
+                                                ? (
+                                                    <>
+                                                        <Image src={route('dashboard.profile.preview', { type: 'npwp', identity: identityNpwp })} alt="NPWP" borderRadius={10} w={300} />
+                                                    </>
+                                                )
+                                                : (
+                                                    <FormControl isRequired>
+                                                        <FormLabel htmlFor="npwp">Upload NPWP</FormLabel>
+                                                        <Uploader url={route('dashboard.profile.upload', membership)} type="npwp" />
+                                                    </FormControl>
+                                                )
+                                        }
+                                    </Box>
+                                    <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
+                                        <Text
+                                            fontWeight='bold'
+                                            textTransform='uppercase'
+                                            fontSize='sm'
+                                            letterSpacing='wide'
+                                            color='teal.600'
+                                        >
+                                            NPWP JURY
+                                        </Text>
+                                        <Text mt={2} color='gray.500'>
+                                            Kami pastikan data NPWP yang telah terupload aman dan tidak ada penyalahgunaan.
+                                            Kami juga merekomendasi untuk melakukan watermark dahulu sebelum Upload.
+                                        </Text>
+                                        <Link
+                                            mt={2}
+                                            mb={3}
+                                            display='block'
+                                            fontSize='lg'
+                                            fontWeight='semibold'
+                                            href={'https://watermarkktp.com/'}
+                                            target={'_blank'}
+                                        >
+                                            Watermark NPWP
+                                        </Link>
+                                    </Box>
                                 </Box>
-                            </Box>
+                            )}
                         </Box>
 
                     </div>
