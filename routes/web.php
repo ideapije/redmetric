@@ -37,6 +37,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'verified']], fu
     Route::get('/download', [DashboardController::class, 'download'])->name('dashboard.download');
     Route::put('/jury/{member}', [JuryController::class, 'update'])->name('dashboard.jury.update');
     Route::get('/jury', [JuryController::class, 'index'])->name('dashboard.jury.index');
+    Route::get('/jury/{submission}', [JuryController::class, 'show'])->name('dashboard.jury.show');
 });
 
 require __DIR__ . '/auth.php';

@@ -148,7 +148,7 @@ export default function SubmissionForm(props) {
                                             </FormControl>
                                         </Box>
                                     </HStack>
-                                    {input?.indicator?.evidence && (
+                                    {/* input?.indicator?.evidence && (
                                         <HStack w="full">
                                             <Box w="75%">
                                                 {input?.indicator?.evidence}
@@ -163,7 +163,7 @@ export default function SubmissionForm(props) {
                                                 )}
                                             </Box>
                                         </HStack>
-                                    )}
+                                                )*/}
                                     <Divider orientation="horizontal" />
                                 </VStack>
                             ))}
@@ -222,7 +222,7 @@ export default function SubmissionForm(props) {
                         </ModalBody>
                         <ModalFooter>
                             <Button colorScheme='ghost' mr={3} onClick={onClose}>
-                                Batal
+                                Cancel
                             </Button>
                             <Button rightIcon={<MdSend />} colorScheme='red' variant='solid' onClick={handleOnClickPublish}>
                                 Publish

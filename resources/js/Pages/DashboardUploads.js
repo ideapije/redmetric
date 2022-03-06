@@ -83,7 +83,7 @@ export default function DashboardUploads(props) {
                                     <Box display="flex">
                                         {
                                             editDoc
-                                                ? <Link onClick={() => setEditDoc(null)}><Text color='blue.500'>Batal</Text></Link>
+                                                ? <Link onClick={() => setEditDoc(null)}><Text color='blue.500'>Cancel</Text></Link>
                                                 : (
                                                     <>
                                                         <Icon as={FaRegEdit} mr={3} />
