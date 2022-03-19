@@ -9,7 +9,7 @@ import { Link } from '@inertiajs/inertia-react';
 const Menus = ({ role_id }) => {
     switch (role_id) {
         // jury
-        case 3:
+        case '3':
             return (
                 <>
                     <NavLink href={route('dashboard')} active={route().current('dashboard')}>

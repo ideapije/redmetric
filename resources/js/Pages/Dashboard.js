@@ -52,7 +52,7 @@ export default function Dashboard({
                 <div className="md:flex no-wrap md:-mx-2 ">
                     <div className="w-full md:w-4/12 md:mx-2">
                         {
-                            auth?.user?.role_id === 3
+                            parseInt(auth?.user?.role_id, 10) === 3
                                 ? <JuryCard {...{ membership }} />
                                 : <UserCard {...{ membership, village }} />
                         }
@@ -60,7 +60,7 @@ export default function Dashboard({
 
                     <div className="w-full md:w-8/12 mx-2 bg-white p-3 border-t-4 h-full">
                         {
-                            auth?.user?.role_id === 3
+                            parseInt(auth?.user?.role_id, 10) === 3
                                 ? <JuryForm {...{ membership, provinces, auth }} />
                                 : <ProfileForm {...{ membership, provinces, village, auth }} />
                         }

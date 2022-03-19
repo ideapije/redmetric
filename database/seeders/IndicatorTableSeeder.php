@@ -45,10 +45,10 @@ class IndicatorTableSeeder extends Seeder
             ],
             'Environment' => [
                 ['EV.01', 'Tingkat Ketersediaan Ruang Terbuka Hijau (RTH) public dan private pada satu wilayah desa. Standar Koefisien Daerah Hijau (KDH) menurut UU No. 26 Tahun 2007 adalah minimal 20% untuk RTH Public.', 'Dokumentasi ruang terbuka hijau yang dimiliki desa meliputi data rekap luas dareah terbuka hijau public dan daerah terbuka hijau private', [
-                    ['Luas ketersediaan ruang terbuka hijau public (RTHPu)', '㎡']
+                    ['Luas ketersediaan ruang terbuka hijau public (RTHPu)', 'k㎡']
                 ]],
                 ['EV.02', 'Tingkat Ketersediaan Ruang Terbuka Hijau (RTH) private dan private pada satu wilayah desa. Standar Koefisien Daerah Hijau (KDH) menurut UU No. 26 Tahun 2007 adalah minimal 10% untuk RTH Private.', 'Dokumentasi ruang terbuka hijau yang dimiliki desa meliputi data rekap luas dareah terbuka hijau public dan daerah terbuka hijau private', [
-                    ['Ketersediaan ruang terbuka hijau private (RTHPr)', '㎡']
+                    ['Ketersediaan ruang terbuka hijau private (RTHPr)', 'k㎡']
                 ]],
                 ['EV.03', '', 'Dokumentasi foto pembangkit', [
                     ['Ketersediaan pembangkit listrik selain PLN', 'Pembangkit']

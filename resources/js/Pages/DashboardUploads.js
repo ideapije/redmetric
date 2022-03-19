@@ -139,8 +139,7 @@ export default function DashboardUploads(props) {
                                 </Box>
                             </Box>
                             <Divider orientation='horizontal' />
-
-                            {props.auth.user.role_id === 2 && (
+                            {parseInt(props.auth.user.role_id, 10) === 2 && (
                                 <Box p={4} display={{ md: 'flex' }}>
                                     <Box flexShrink={0} pt={6}>
                                         {
@@ -180,7 +179,7 @@ export default function DashboardUploads(props) {
                                 </Box>
                             )}
 
-                            {props.auth.user.role_id === 3 && (
+                            {parseInt(props.auth.user.role_id, 10) === 3 && (
                                 <Box p={4} display={{ md: 'flex' }}>
                                     <Box flexShrink={0} pt={6}>
                                         {
