@@ -21,24 +21,25 @@ class IndicatorTableSeeder extends Seeder
         $data = collect([
             'People' => [
                 ['PP.01', '', null, [
-                    ['Jumlah Kegiatan Bakti Sosial Desa dalam 1 tahun terakhir', 'Kegiatan'],
+                    ['Jumlah Kegiatan Bakti Sosial Desa dalam 1 tahun terakhir', 'Kegiatan']
+                ]],
+                ['PP.02', '', null, [
                     ['Jumlah Partisipan yang diundang', 'Orang'],
                     ['Jumlah Partisipan yang hadir', 'Orang']
                 ]],
-                ['PP.02', '', null, [
-                    ['Jumlah ketersediaan sekolah SD/MI', 'Sekolah'],
-                    ['Jumlah ketersediaan sekolah SMP/MTs', 'Sekolah']
-                ]],
                 ['PP.03', '', null, [
-                    ['Jumlah warga usia produktif yang buta huruf', 'Orang']
+                    ['Jumlah ketersediaan sekolah', 'Sekolah']
                 ]],
                 ['PP.04', '', null, [
-                    ['Jumlah Warga usia produktif pengguna smartphone', 'Orang']
+                    ['Jumlah warga usia produktif yang buta huruf', 'Orang']
                 ]],
                 ['PP.05', '', null, [
-                    ['Jumlah Warga usia produktif yang memiliki Pendidikan Akhir SMA', 'Orang']
+                    ['Jumlah Warga usia produktif pengguna smartphone dan computer', 'Orang']
                 ]],
                 ['PP.06', '', null, [
+                    ['Jumlah Warga usia produktif yang memiliki Pendidikan Akhir SMA', 'Orang']
+                ]],
+                ['PP.07', '', null, [
                     ['Jumlah Warga usia produktif yang memiliki Pendidikan Akhir minimal D3', 'Orang']
                 ]]
             ],
@@ -60,28 +61,25 @@ class IndicatorTableSeeder extends Seeder
                     ['Jumlah rumah warga yang memanfaatkan air tadah hujan', 'Rumah']
                 ]],
                 ['EV.06', '', null, [
-                    ['Jumlah hasil produksi pangan local dari pertanian dan perkebunan dalam satu tahun terakhir', 'Kwintal'],
-                    ['Jumlah hasil produksi pangan local dari peternakan dalam satu tahun terakhir', 'Kwintal']
+                    ['Jumlah titik penerangan jalan umum', 'Titik'],
+                    ['Jumlah titik penerangan jalan umum yang menggunakan otomatis energy manajemen (Solar cell, LDR, atau lainnya)', 'Titik']
                 ]],
                 ['EV.07', '', null, [
                     ['Index kualitas udara', 'µgram/m3']
                 ]],
                 ['EV.08', '', null, [
                     ['Ketersediaan bank sampah atau pengelolaan limbah', 'Unit']
-                ]],
-                ['EV.09', '', null, [
-                    ['Jumlah kegiatan bakti lingkungan yang dilakukan pemerintah desa dalam satu tahun terakhir', 'Kegiatan']
                 ]]
             ],
             'Economy' => [
                 ['EC.01', '', null, [
-                    ['Jumlah usia produktif (15 – 60 tahun) yang belum mendapatkan pekerjaan', 'Orang']
-                ]],
-                ['EC.02', '', null, [
                     ['Jumlah usia produktif (15 – 60 tahun) yang bekerja', 'Orang']
                 ]],
+                ['EC.02', '', null, [
+                    ['Jumlah usia produktif (15 – 60 tahun) yang wiraswasta', 'Orang']
+                ]],
                 ['EC.03', 'Penciptaan lapangan kerja lokal / UMKM', 'Daftar UMKM yang terdaftar atau yang memiliki surat keterangan izin usaha', [
-                    ['Jumlah lapangan pekerjaan lokal (UMKM) yang diciptakan dalam 1 tahun terakhir', 'Pekerjaan']
+                    ['Jumlah lapangan pekerjaan lokal (UMKM) yang tersedia dalam 1 tahun terakhir', 'Pekerjaan']
                 ]],
                 ['EC.04', 'Tingkat GDP per kepala dari populasi desa tiap Tahun', null, [
                     ['Nilai Rerata GDP per Kepala dari populasi desa', 'Rp/Tahun']
@@ -96,7 +94,7 @@ class IndicatorTableSeeder extends Seeder
                     ['Kunjungan Wisatawan baik lokal maupun luar daerah', 'Kunjungan']
                 ]],
                 ['EC.08', 'Tingkat Kepuasan wisatawan terhadap pelayanan selama berwisata di objek wisata yang dimiliki Desa', 'Dibutuhkan Hasil survey kepuasan wisatawan terhadap pelayanan selama berwisata di objek wisata yang dimiliki Desa', [
-                    ['Kepuasan wisatawan terhadap pelayanan selama berwisata di objek wisata yang dimiliki Desa', 'Likert']
+                    ['Nilai Kepuasan wisatawan terhadap pelayanan selama berwisata di objek wisata yang dimiliki Desa', '(0 – 100)']
                 ]],
                 ['EC.09', 'Kemampuan desa dalam membiayai untuk mewujudkan desa cerdas', 'Rencana Program Kerja Desa tahunan yang memuat program Desa Cerdas', [
                     ['Alokasi dana desa untuk proyek atau program desa cerdas selama 1 tahun terakhir', 'Juta']
@@ -107,22 +105,22 @@ class IndicatorTableSeeder extends Seeder
             ],
             'Governance' => [
                 ['GV.01', 'Sejauh mana informasi pemerintah desa dipublikasikan', 'Dibutuhkan Hasil survey kepuasan masyarakat terhadap tata Kelola layanan pemerintah desa', [
-                    ['Ketersediaan dan transparansi data maupun informasi oleh pemerintahan desa', 'Likert']
+                    ['Nilai Persepsi masyarakat terhadap Ketersediaan dan transparansi data maupun informasi oleh pemerintahan desa', '(0 – 100)']
                 ]],
                 ['GV.02', 'Tingkat keandalan layanan umum yang diberikan pemerintah desa kepada para pemangku kepentingan', 'Dibutuhkan Hasil survey kepuasan masyarakat terhadap tata Kelola layanan pemerintah desa', [
-                    ['Keandalan layanan umum yang diberikan oleh pemerintah desa kepada stakeholder', 'Likert']
+                    ['Keandalan layanan umum yang diberikan oleh pemerintah desa kepada stakeholder', '(0 – 100)']
                 ]],
-                ['GV.03', 'Tingkat efektivitas dan efisiensi tata Kelola dan kebijakan pemerintah desa', 'Dibutuhkan Hasil survey kepuasan masyarakat terhadap tata Kelola layanan pemerintah desa', [
-                    ['Efektivitas tata Kelola dan kebijakan umum pemerintahan desa dalam mewujudkan desa pintar', 'Likert']
+                ['GV.03', '', null, [
+                    ['Nilai persepsi masyarakat terhadap Efektivitas tata Kelola dan kebijakan umum pemerintahan desa dalam mewujudkan desa cerdas', '(0 – 100)']
                 ]],
                 ['GV.04', 'Tingkat efisiensi sistem tata Kelola, layanan dan umpan balik pemerintah desa berbasis elektronik (ICT)', 'Dibutuhkan Hasil survey kepuasan masyarakat terhadap tata Kelola layanan pemerintah desa', [
-                    ['Efisiensi Sistem tata Kelola, layanan dan umpan balik pemerintah desa berbasis elektronik (ICT)', 'Likert']
+                    ['Efisiensi Sistem tata Kelola, layanan dan umpan balik pemerintah desa berbasis elektronik (ICT)', '(0 - 100)']
                 ]],
                 ['GV.05', 'Tingkat kebaruan informasi yang diberikan oleh pemerintah desa', 'Cek official website', [
-                    ['Kebaruan informasi yang diberikan oleh pemerintah desa', 'Likert']
+                    ['Intensitas update informasi yang diberikan oleh pemerintah desa berbasis website', '(1 - 12)']
                 ]],
                 ['GV.06', 'Tingkat kualitas dukungan staff pemerintahan desa dalam memberikan pelayanan kepada masyarakat', 'Dibutuhkan Hasil survey kepuasan masyarakat terhadap tata Kelola layanan pemerintah desa', [
-                    ['Kualitas dukungan perangkat pemerintahan desa dalam memberikan layanan terhadap masyarakat', 'Likert']
+                    ['Kualitas dukungan perangkat pemerintahan desa dalam memberikan layanan terhadap masyarakat', '(0 - 100)']
                 ]]
             ],
             'Infrastructure' => [
@@ -135,7 +133,7 @@ class IndicatorTableSeeder extends Seeder
                     ['Jumlah Wi-Fi hotspot gratis untuk akses internet di ruang public', 'Titik']
                 ]],
                 ['IS.03', 'Access to public transportation', null, [
-                    ['Total rumah warga desa', 'Rumah'],
+                    ['Jumlah rumah warga', 'Rumah'],
                     ['Jumlah rumah warga yang dapat mengakses fasilitas transportasi umum dalam radius ≤ 500 meter (APT)', 'Rumah']
                 ]]
             ],
@@ -144,16 +142,16 @@ class IndicatorTableSeeder extends Seeder
                     ['Kepadatan penduduk desa', 'Jiwa/Ha']
                 ]],
                 ['LV.02', 'Angka kejahatan (crime rate) per 100.000 penduduk', null, [
-                    ['Jumlah kejadian tindak kriminalitas dalam 1 tahun terakhir (CR)', 'Kejadian']
+                    ['Jumlah kejadian tindak kriminalitas dalam 1 tahun terakhir', 'Kasus']
                 ]],
                 ['LV.03', 'Biaya hidup masyarakat desa', null, [
                     ['Biaya hidup', 'Rp/Bulan']
                 ]],
                 ['LV.04', 'Tingkat kepuasan masyarakat terhadap Perencanaan, pemantauan, dan pengelolaan risiko bencana', null, [
-                    ['Kepuasan masyarakat terhadap Perencanaan, pemantauan, dan pengelolaan risiko bencana', 'Likert']
+                    ['Kepuasan masyarakat terhadap Perencanaan, pemantauan, dan pengelolaan risiko bencana', '(0 - 100)']
                 ]],
                 ['LV.05', 'Tingkat kepuasan masyarakat terhadap Akses ke layanan perawatan kesehatan dasar', null, [
-                    ['Kepuasan masyarakat terhadap Akses ke layanan perawatan kesehatan dasar', 'Likert']
+                    ['Kepuasan masyarakat terhadap Akses ke layanan perawatan kesehatan dasar', '(0 – 100)']
                 ]]
             ]
         ]);
