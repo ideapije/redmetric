@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head, Link, useForm } from '@inertiajs/inertia-react';
 import { Button } from '@chakra-ui/button';
@@ -21,7 +21,10 @@ import {
   ModalCloseButton,
   useDisclosure,
   Link as BtnLink,
-  Icon
+  Icon,
+  Radio,
+  FormHelperText,
+  Heading
 } from '@chakra-ui/react';
 import {
   ArrowLeftIcon,
@@ -31,21 +34,23 @@ import {
 } from '@chakra-ui/icons';
 import ValidationErrors from '@/Components/ValidationErrors';
 import Step from '@/Components/Step';
-import { FormControl } from '@chakra-ui/form-control';
-import { MdSend, MdAttachFile } from 'react-icons/md'
+import { FormControl, FormLabel } from '@chakra-ui/react';
+import { MdSend, MdAttachFile } from 'react-icons/md';
 import { Input } from '@chakra-ui/input';
+import { RadioGroup } from '@headlessui/react';
+import RadioScore from '@/Components/RadioScore';
 
 export default function JudgingForm(props) {
-  const { questions, period, steps, village } = props;
+  const { indicators, submission, steps, village } = props;
   const [page, setPage] = useState(1);
-  const [tabs, setTabs] = useState(steps)
+  const [tabs, setTabs] = useState(steps);
 
   const submitRef = useRef(null)
   const publishRef = useRef(null)
-  const inputs = questions[page];
-  const lastKey = parseInt(Object.keys(questions).pop(), 10);
+  const inputs = indicators[page];
+  const lastKey = parseInt(Object.keys(indicators).pop(), 10);
 
-  const { data, setData, post, put, processing, errors } = useForm(questions);
+  const { data, setData, post, put, processing, errors } = useForm(indicators);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleOnChangePage = (page) => {
@@ -78,11 +83,7 @@ export default function JudgingForm(props) {
 
   const submit = (e) => {
     e.preventDefault();
-    post(route('dashboard.user.submission.store', period));
-  }
-  const submitPublish = (e) => {
-    e.preventDefault();
-    put(route('dashboard.user.submission.publish', period));
+    post(route('dashboard.jury.judging.store', submission));
   }
   const handleOnClickSave = () => {
     submitRef.current.click();
@@ -90,6 +91,30 @@ export default function JudgingForm(props) {
   const handleOnClickPublish = () => {
     publishRef.current.click();
   }
+
+  const handleOnClickScore = (id, value) => {
+    const obj = {}
+    Object.keys(data).forEach((k) => {
+      let values = data[k]
+      if (parseInt(k, 10) === page) {
+        values = values?.map(v => {
+          if (v.id === id) {
+            return ({
+              ...v,
+              jury_values: {
+                ...v.jury_values,
+                point: value
+              }
+            })
+          }
+          return v;
+        });
+      }
+      obj[k] = values;
+    });
+    setData(obj);
+  }
+
   return (
     <Authenticated
       auth={props.auth}
@@ -104,91 +129,74 @@ export default function JudgingForm(props) {
         </div>
       </div>
       <div className="container mx-auto my-5 p-5">
-
         <div className="shadow sm:rounded-md sm:overflow-hidden">
-          <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
-            <form onSubmit={submit} encType="multipart/form-data" method="post">
-              <input type="hidden" name="_token" value={props.csrf_token} />
-              <ValidationErrors errors={errors} />
-              <VStack spacing={10}>
-                {inputs && inputs?.map((input, ix) => (
-                  <VStack w="full" spacing={3} alignItems="flex-start" key={input.id}>
-                    <HStack spacing={5}>
-                      <strong>{input?.indicator?.code}</strong>
-                      <Text>{input.label}</Text>
-                    </HStack>
-                    <HStack spacing={5} alignItems="self-start">
-                      <strong>Result</strong>
-                      <Text>{`${data[page][ix]?.result} %`}</Text>
-                      <Text>{data[page][ix]?.value}</Text>
-                    </HStack>
-                    <Divider orientation="horizontal" />
-                  </VStack>
+          <form onSubmit={submit}>
+            <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
+              <VStack align="self-start" justifyContent="center" spacing={10}>
+                {inputs.map((input, ix) => (
+                  <HStack spacing={10} key={input.id}>
+                    <FormControl>
+                      <HStack spacing={10}>
+                        <Heading size="md">{input.code}</Heading>
+                        <Text fontWeight={600} color={'orange.500'}>({input.pivot.result > 100 ? input.pivot.result : `${input.pivot.result} %`})</Text>
+                      </HStack>
+                      <FormLabel htmlFor={`score${input.id}`}>
+                        <ol>
+                          {input.inputs.map((i, ix) => (
+                            <li key={i.id}>
+                              {ix + 1}. {i.label}
+                            </li>
+                          ))}
+                        </ol>
+                      </FormLabel>
+                      <Stack direction="row">
+                        {Array.from(({ length: 5 }), (x, option) => (
+                          <React.Fragment key={option}>
+                            <input type="radio" value={option + 1} name={`points[${input.id}]`} onClick={() => handleOnClickScore(input.id, option + 1)} />
+                            <Text>
+                              {option + 1}
+                            </Text>
+                          </React.Fragment>
+                        ))}
+                      </Stack>
+                      {input.description.length > 1 && <FormHelperText>{input.description}</FormHelperText>}
+                    </FormControl>
+                  </HStack>
                 ))}
               </VStack>
-              <button type="submit" style={{ opacity: 0 }} ref={submitRef}></button>
-            </form>
-          </div>
-          <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-            <Flex>
-              <Box p='4'>
-                <Button
-                  variant="ghost"
-                  disabled={page === 1}
-                  leftIcon={<ArrowLeftIcon />}
-                  onClick={() => handleOnChangePage(page - 1)}>
-                  Previous
-                </Button>
-              </Box>
-              <Spacer />
-              <Box p='4'>
-                <Stack direction='row' spacing={6}>
-                  <Button onClick={handleOnClickSave} leftIcon={<CheckIcon />} colorScheme="blue" variant='outline'>
-                    Save
-                  </Button>
-                  {(lastKey === page) && (
-                    <Button onClick={onOpen} rightIcon={<MdSend />} colorScheme='red' variant='solid'>
-                      Publish
-                    </Button>
-                  )}
+            </div>
+            <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+              <Flex>
+                <Box p='4'>
                   <Button
-                    disabled={(lastKey === page)}
                     variant="ghost"
-                    rightIcon={<ArrowRightIcon />}
-                    onClick={() => handleOnChangePage(page + 1)}>
-                    Next
+                    disabled={page === 1}
+                    leftIcon={<ArrowLeftIcon />}
+                    onClick={() => handleOnChangePage(page - 1)}>
+                    Previous
                   </Button>
-                </Stack>
-              </Box>
-            </Flex>
-          </div>
+                </Box>
+                <Spacer />
+                <Box p='4'>
+                  <Stack direction='row' spacing={6}>
+                    {(lastKey === page) && (
+                      <Button type="submit" rightIcon={<MdSend />} colorScheme='red' variant='solid'>
+                        Submit
+                      </Button>
+                    )}
+                    <Button
+                      disabled={(lastKey === page)}
+                      variant="ghost"
+                      rightIcon={<ArrowRightIcon />}
+                      onClick={() => handleOnChangePage(page + 1)}>
+                      Next
+                    </Button>
+                  </Stack>
+                </Box>
+              </Flex>
+            </div>
+          </form>
         </div>
-        <form onSubmit={submitPublish} method="post">
-          <input type="hidden" name="_token" value={props.csrf_token} />
-          <input type="hidden" name="period" value={period.id || 0} />
-          <button type="submit" style={{ opacity: 0 }} ref={publishRef}></button>
-        </form>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Publish Red Metric</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Text fontSize='xl'>Apakah Anda yakin?</Text>
-              <Text fontSize='lg'>
-                Data yang terkirim tidak dapat di edit setelah <b>Publish Red Metric</b>
-              </Text>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme='ghost' mr={3} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button rightIcon={<MdSend />} colorScheme='red' variant='solid' onClick={handleOnClickPublish}>
-                Publish
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </div>
     </Authenticated>
   );

@@ -9,6 +9,7 @@ use App\Models\Submission;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Modules\Membership\Member;
+use stdClass;
 
 class JuryController extends Controller
 {
@@ -29,30 +30,22 @@ class JuryController extends Controller
 
     public function show(Request $request, Submission $submission)
     {
-        $pivot = $submission->indicators->map(function ($indicator) {
-            return $indicator->pivot->load([
-                'values',
-                'evidence'
+        $indicators = $submission->indicators->map(function ($indicator) {
+            $pivot = $indicator->pivot->load([
+                'juryValues' => function ($query) {
+                    $query->where('jury_id', auth()->user()->jury->id ?? null);
+                }
+            ]);
+            $juryValues = collect(collect($pivot)->get('jury_values'))->first();
+            $juryValues = $juryValues ?? ['point' => null];
+            $juryValues = (object)($juryValues);
+            return collect($indicator->load('inputs'))->merge([
+                'jury_values' => $juryValues
             ]);
         });
-        $categories     = IndicatorCriteria::with(['indicators.inputs'])->get();
-        $questions      = $categories->mapWithKeys(function ($criteria) use ($pivot) {
-            $items = $criteria->indicators->map(function ($indicator) {
-                return $indicator->inputs->load('indicator');
-            })->flatten();
-            $items = $items->map(function ($item, $index) use ($pivot) {
-                $input      = $pivot->pluck('values')->flatten()->where('indicator_input_id', $item->id)->first();
-                $question   = collect($item)->merge([
-                    'index' => $index,
-                    'value' => $input->value ?? '',
-                    'evidence' => $pivot->where('indicator_id', $item->indicator_id)->first()->evidence ?? null,
-                    'result' => $pivot->where('indicator_id', $item->indicator_id)->first()->result
-                ]);
-                return $question;
-            });
-            return [$criteria->id => $items];
-        });
-        $steps = $categories->map(function ($category) {
+        $indicators = collect($indicators)->groupBy('indicator_criteria_id')->all();
+        $categories = IndicatorCriteria::all();
+        $steps      = $categories->map(function ($category) {
             return [
                 'id' => $category->id,
                 'title' => "Step {$category->id}",
@@ -61,8 +54,8 @@ class JuryController extends Controller
             ];
         });
         return Inertia::render('JudgingForm', [
-            'questions' => $questions,
-            'period' => $submission->period,
+            'indicators' => $indicators,
+            'submission' => $submission,
             'steps' => $steps,
             'village' => $submission->user->village ?? null
         ]);

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JuryController;
+use App\Http\Controllers\JuryJudgingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubmissionController;
 
@@ -38,6 +39,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'verified']], fu
     Route::put('/jury/{member}', [JuryController::class, 'update'])->name('dashboard.jury.update');
     Route::get('/jury', [JuryController::class, 'index'])->name('dashboard.jury.index');
     Route::get('/jury/{submission}', [JuryController::class, 'show'])->name('dashboard.jury.show');
+    Route::post('/jury/{submission}/judging', [JuryJudgingController::class, 'store'])->name('dashboard.jury.judging.store');
 });
 
 require __DIR__ . '/auth.php';
