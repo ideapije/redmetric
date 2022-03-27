@@ -40,6 +40,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'verified']], fu
     Route::get('/jury', [JuryController::class, 'index'])->name('dashboard.jury.index');
     Route::get('/jury/{submission}', [JuryController::class, 'show'])->name('dashboard.jury.show');
     Route::post('/jury/{submission}/judging', [JuryJudgingController::class, 'store'])->name('dashboard.jury.judging.store');
+    Route::get('/jury/{submission}/publish', [JuryJudgingController::class, 'publish'])->name('dashboard.jury.judging.publish');
 });
 
 require __DIR__ . '/auth.php';

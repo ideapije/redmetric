@@ -10,6 +10,7 @@ import {
     Th,
     Td,
     TableCaption,
+    HStack
 } from "@chakra-ui/react"
 import { VStack, Container, Divider, Box, Badge } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
@@ -52,13 +53,27 @@ export default function UserSubmission(props) {
                                         </Td>
                                         <Td>{moment(todo?.updated_at, "YYYY-MM-DD").format("DD-MM-YYYY")}</Td>
                                         <Td>{todo?.user?.village?.name}</Td>
-                                        <Td isNumeric>{todo?.total_points}</Td>
+                                        <Td isNumeric>
+                                            <ol>
+                                                <li>PP : {todo.pp}</li>
+                                                <li>EV : {todo.ev}</li>
+                                                <li>EC : {todo.ec}</li>
+                                                <li>GV : {todo.gv}</li>
+                                                <li>IS : {todo.is}</li>
+                                                <li>LV : {todo.lv}</li>
+                                            </ol>
+                                        </Td>
                                         <Td>
-                                            <Link href={route('dashboard.jury.show', todo.id)}>
-                                                <Button variant="link">
-                                                    Review
-                                                </Button>
-                                            </Link>
+                                            <HStack spacing={10}>
+                                                <Link href={route('dashboard.jury.show', todo.id)}>
+                                                    <Button variant="link">
+                                                        Review
+                                                    </Button>
+                                                </Link>
+                                                <Link href={route('dashboard.jury.judging.publish', todo)}>
+                                                    Publish
+                                                </Link>
+                                            </HStack>
                                         </Td>
                                     </Tr>
                                 ))}

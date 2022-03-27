@@ -14,7 +14,13 @@ class Submission extends Model
     protected $fillable = [
         'user_id',
         'period_id',
-        'publish'
+        'publish',
+        'pp',
+        'ev',
+        'ec',
+        'gv',
+        'is',
+        'lv'
     ];
 
     protected $appends = ['status'];

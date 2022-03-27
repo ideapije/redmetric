@@ -28,5 +28,35 @@ class JuryJudgingController extends Controller
                 ]);
             }
         });
+        return redirect()->route('dashboard.jury.index')->with([
+            'success' => 'Success! Judging is stored'
+        ]);
+    }
+
+    public function publish(Submission $submission)
+    {
+        $points = $submission->indicators->map(function ($indicator) {
+            $juryValue = $indicator->pivot->juryValues()->where([
+                'indicator_submission_id' => $indicator->pivot->id,
+                'jury_id' => auth()->user()->jury->id ?? null
+            ])->first();
+            return [
+                'criteria' => $indicator->indicator_criteria_id,
+                'point' => $juryValue->point
+            ];
+        });
+        $fields = ['pp', 'ev', 'ec', 'gv', 'is', 'lv'];
+        $points = collect($points)->groupBy('criteria')->map(function ($point) {
+            $values = collect($point)->pluck('point');
+            $total = $values->count() * 5;
+            $sum = $values->sum();
+            return round(($sum * 100) / $total, 2);
+        });
+        $updates = collect($fields)->combine($points);
+        $submission->update($updates->toArray());
+
+        return redirect()->route('dashboard.jury.index')->with([
+            'success' => 'Success! Judging is published'
+        ]);
     }
 }
