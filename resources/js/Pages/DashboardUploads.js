@@ -21,6 +21,7 @@ import { Button } from '@chakra-ui/button';
 import Uploader from '@/Components/Uploader';
 import UserCard from '@/Components/UserCard';
 import Title from '@/Components/Title';
+import JuryCard from '@/Components/JuryCard';
 
 const usePreviousValue = value => {
     const ref = useRef();
@@ -64,7 +65,11 @@ export default function DashboardUploads(props) {
             <div className="container mx-auto my-5 p-5">
                 <div className="md:flex no-wrap md:-mx-2 ">
                     <div className="w-full md:w-4/12 md:mx-2">
-                        <UserCard {...{ membership, village }} />
+                        {
+                            parseInt(props.auth?.user?.role_id, 10) === 3
+                                ? <JuryCard {...{ membership }} />
+                                : <UserCard {...{ membership, village }} />
+                        }
                     </div>
 
                     <div className="w-full md:w-8/12 mx-2 h-64 p-3">

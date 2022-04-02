@@ -41,49 +41,26 @@ import { RadioGroup } from '@headlessui/react';
 import RadioScore from '@/Components/RadioScore';
 
 export default function JudgingForm(props) {
-  const { indicators, submission, steps, village } = props;
+  const { steps, submission, village } = props;
+  const { data, setData, post, put, processing, errors } = useForm({});
   const [page, setPage] = useState(1);
   const [tabs, setTabs] = useState(steps);
+  const [inputs, setInputs] = useState(null);
 
-  const submitRef = useRef(null)
-  const publishRef = useRef(null)
-  const inputs = indicators[page];
-  const lastKey = parseInt(Object.keys(indicators).pop(), 10);
+  const submitRef = useRef(null);
+  const publishRef = useRef(null);
+  const lastKey = parseInt(Object.keys(data).pop(), 10);
 
-  const { data, setData, post, put, processing, errors } = useForm(indicators);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleOnChangePage = (page) => {
+  const handleOnChangePage = (pg) => {
     const modifiedTabs = tabs.map((tab) => ({
       ...tab,
-      active: (tab.id === page)
+      active: (tab.id === pg)
     }))
     setTabs(modifiedTabs);
-    setPage(page);
-  }
-
-  const onHandleChange = (event) => {
-    if (event.hasOwnProperty('target')) {
-      const index = parseInt(event.target.id)
-      const obj = {}
-      Object.keys(data).forEach((k) => {
-        let values = data[k]
-        if (parseInt(k, 10) === page) {
-          values = values?.map((v, vx) => ({
-            ...v,
-            value: (vx === index && event.target.name === 'value') ? event.target.value : v.value,
-            evidence: (vx === index && event.target.name === 'evidence') ? event.target.files[0] : null
-          }));
-        }
-        obj[k] = values;
-      })
-      setData(obj);
-    }
-  };
-
-  const submit = (e) => {
-    e.preventDefault();
-    post(route('dashboard.jury.judging.store', submission));
+    setPage(pg);
+    setInputs(data[pg]);
   }
   const handleOnClickSave = () => {
     submitRef.current.click();
@@ -91,7 +68,6 @@ export default function JudgingForm(props) {
   const handleOnClickPublish = () => {
     publishRef.current.click();
   }
-
   const handleOnClickScore = (id, value) => {
     const obj = {}
     Object.keys(data).forEach((k) => {
@@ -114,6 +90,14 @@ export default function JudgingForm(props) {
     });
     setData(obj);
   }
+  const submit = (e) => {
+    e.preventDefault();
+    post(route('dashboard.jury.judging.store', submission));
+  }
+  useEffect(() => {
+    setData(props.indicators);
+    setInputs(props.indicators[page]);
+  }, []);
 
   return (
     <Authenticated
@@ -133,7 +117,7 @@ export default function JudgingForm(props) {
           <form onSubmit={submit}>
             <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
               <VStack align="self-start" justifyContent="center" spacing={10}>
-                {inputs.map((input, ix) => (
+                {inputs && inputs.map((input, ix) => (
                   <HStack spacing={10} key={input.id}>
                     <FormControl>
                       <HStack spacing={10}>
@@ -152,7 +136,13 @@ export default function JudgingForm(props) {
                       <Stack direction="row">
                         {Array.from(({ length: 5 }), (x, option) => (
                           <React.Fragment key={option}>
-                            <input type="radio" value={option + 1} name={`points[${input.id}]`} onClick={() => handleOnClickScore(input.id, option + 1)} />
+                            <input
+                              type="radio"
+                              value={option + 1}
+                              name={`points[${input.id}]`}
+                              onClick={() => handleOnClickScore(input.id, option + 1)}
+                              defaultChecked={(input.jury_values?.point === option + 1)}
+                            />
                             <Text>
                               {option + 1}
                             </Text>
