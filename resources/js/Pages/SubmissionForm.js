@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head, Link, useForm } from '@inertiajs/inertia-react';
 import { Button } from '@chakra-ui/button';
@@ -36,25 +36,26 @@ import { MdSend, MdAttachFile } from 'react-icons/md'
 import { Input } from '@chakra-ui/input';
 
 export default function SubmissionForm(props) {
-    const { questions, period, steps } = props;
+    const { data, setData, post, put, processing, errors } = useForm({});
+    const { period, steps } = props;
     const [page, setPage] = useState(1);
     const [tabs, setTabs] = useState(steps)
+    const [inputs, setInputs] = useState(null)
 
     const submitRef = useRef(null)
     const publishRef = useRef(null)
-    const inputs = questions[page];
-    const lastKey = parseInt(Object.keys(questions).pop(), 10);
+    const lastKey = parseInt(Object.keys(data).pop(), 10);
 
-    const { data, setData, post, put, processing, errors } = useForm(questions);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const handleOnChangePage = (page) => {
+    const handleOnChangePage = (pg) => {
         const modifiedTabs = tabs.map((tab) => ({
             ...tab,
-            active: (tab.id === page)
+            active: (tab.id === pg)
         }))
         setTabs(modifiedTabs);
-        setPage(page);
+        setPage(pg);
+        setInputs(data[pg]);
     }
 
     const onHandleChange = (event) => {
@@ -90,6 +91,11 @@ export default function SubmissionForm(props) {
     const handleOnClickPublish = () => {
         publishRef.current.click();
     }
+
+    useEffect(() => {
+        setData(props.questions);
+        setInputs(props.questions[page]);
+    }, []);
     return (
         <Authenticated
             auth={props.auth}
