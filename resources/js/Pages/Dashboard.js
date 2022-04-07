@@ -16,6 +16,7 @@ import {
     Divider,
     Icon
 } from '@chakra-ui/react';
+import { createClient } from '@supabase/supabase-js';
 import { FaRegEdit } from 'react-icons/fa';
 import { Button } from '@chakra-ui/button';
 import Uploader from '@/Components/Uploader';
@@ -39,8 +40,30 @@ export default function Dashboard({
     village,
     errors,
     title,
-    auth
+    auth,
+    ...props
 }) {
+    const [image, setImage] = useState(null)
+    const supabaseUrl = process.env.MIX_SUPABASE_URL;
+    const supabaseKey = process.env.MIX_SUPABASE_KEY;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const handleOnUpload = async (event) => {
+        const avatarFile = event.target.files[0];
+        const { data, error } = await supabase.storage
+            .from('avatars')
+            .upload('public/redmetric1.jpg', avatarFile);
+        console.log('d', data);
+    }
+
+    const handleOnPreview = async () => {
+        const { signedURL, error } = await supabase
+            .storage
+            .from('avatars')
+            .createSignedUrl('public/redmetric1.jpg', 60);
+        setImage(signedURL);
+    }
+    
     return (
         <Authenticated
             auth={auth}
