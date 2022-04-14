@@ -29,7 +29,10 @@ class JuryJudgingController extends Controller
             }
         });
         return redirect()->route('dashboard.jury.index')->with([
-            'success' => 'Success! Judging is stored'
+            'alert' => [
+                'status' => 'success',
+                'message' => 'Success! your judgement stored'
+            ]
         ]);
     }
 
@@ -56,7 +59,10 @@ class JuryJudgingController extends Controller
         $submission->update($updates->toArray());
 
         return redirect()->route('dashboard.jury.index')->with([
-            'success' => 'Success! Judging is published'
+            'alert' => [
+                'status' => 'success',
+                'message' => 'Success! your input published'
+            ]
         ]);
     }
 }

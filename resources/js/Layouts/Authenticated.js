@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/inertia-react';
+import { Link, usePage } from '@inertiajs/inertia-react';
+import { Alert, AlertDescription, AlertIcon, Box, CloseButton } from '@chakra-ui/react';
 
 
-const Menus = ({ role_id }) => {
+const Menus = ({ role_id, isJoined = false }) => {
     switch (parseInt(role_id, 10)) {
         case 3:
             return (
@@ -17,7 +18,7 @@ const Menus = ({ role_id }) => {
                     <NavLink href={route('dashboard.uploads')} active={route().current('dashboard.uploads')}>
                         Upload Documents
                     </NavLink>
-                    <NavLink href={route('dashboard.jury.index')} active={route().current('dashboard.jury.index')}>
+                    <NavLink href={route('dashboard.jury.index')} active={isJoined}>
                         Penjurian
                     </NavLink>
                 </>
@@ -31,7 +32,7 @@ const Menus = ({ role_id }) => {
                     <NavLink href={route('dashboard.uploads')} active={route().current('dashboard.uploads')}>
                         Upload Dokumen
                     </NavLink>
-                    <NavLink href={route('dashboard.submission')} active={route().current('dashboard.submission')}>
+                    <NavLink href={route('dashboard.submission')} active={isJoined}>
                         Join Red Metric
                     </NavLink>
                 </>
@@ -41,6 +42,12 @@ const Menus = ({ role_id }) => {
 
 export default function Authenticated({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const { flash } = usePage().props;
+    const isJoined = (
+        route().current('dashboard.submission') ||
+        route().current('dashboard.user.submission.form') ||
+        route().current('dashboard.jury.show')
+    );
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white border-b border-gray-100">
@@ -54,7 +61,7 @@ export default function Authenticated({ auth, header, children }) {
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <Menus {...auth.user} />
+                                <Menus {...auth.user} isJoined={isJoined} />
                             </div>
                         </div>
 
@@ -132,7 +139,7 @@ export default function Authenticated({ auth, header, children }) {
                         </ResponsiveNavLink>
                     </div>
                     <div className="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink href={route('dashboard.submission')} active={route().current('dashboard.submission')}>
+                        <ResponsiveNavLink href={route('dashboard.submission')} active={isJoined}>
                             Join Red Metric
                         </ResponsiveNavLink>
                     </div>
@@ -158,7 +165,18 @@ export default function Authenticated({ auth, header, children }) {
                     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
                 </header>
             )}
-
+            {flash.alert && (
+                <Alert status={flash.alert?.status}>
+                    <AlertIcon />
+                    <Box flex={1}>
+                        <AlertDescription>{flash.alert?.message}</AlertDescription>
+                    </Box>
+                    <Link href={route('dashboard.destroy-alert')}>
+                    <CloseButton position="absolute" right="8px" top="8px"/>
+                    </Link>
+                    
+                </Alert>
+            )}
             <main>{children}</main>
         </div>
     );

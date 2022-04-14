@@ -43,16 +43,25 @@ class ProfileController extends Controller
         if ($village) {
             if ($village->account()->count()) {
                 return redirect()->route('dashboard')->with([
-                    'success' => 'Success! Your village is stored'
+                    'alert' => [
+                        'status' => 'success',
+                        'message' => 'Success! Your village is stored'
+                    ]
                 ]);
             } else {
                 return redirect()->back()->with([
-                    'error' => 'Error! failed to store village'
+                    'alert' => [
+                        'status' => 'error',
+                        'message' => 'Error! failed to store village'
+                    ]
                 ]);
             }
         } else {
             return redirect()->route('dashboard')->with([
-                'error' => 'Error! failed to store village'
+                'alert' => [
+                    'status' => 'error',
+                    'message' => 'Error! failed to store village'
+                ]
             ]);
         }
     }
@@ -70,7 +79,10 @@ class ProfileController extends Controller
         $data['since'] = Carbon::parse($request->get('since'))->format('Y-m-d');
         $village->update($data);
         return redirect()->route('dashboard')->with([
-            'success' => 'Success! Your village is stored'
+            'alert' => [
+                'status' => 'success',
+                'message' => 'Success! profile updated'
+            ]
         ]);
     }
 
@@ -96,9 +108,19 @@ class ProfileController extends Controller
                 $hasIdentity->delete();
             }
             $membership->identities()->create($data);
-            return redirect()->back();
+            return redirect()->back()->with([
+                'alert' => [
+                    'status' => 'success',
+                    'message' => 'Success! file uploaded'
+                ]
+            ]);
         } catch (\Throwable $th) {
-            return redirect()->route('dashboard')->with(['error' => 'Error!']);
+            return redirect()->route('dashboard')->with([
+                'alert' => [
+                    'status' => 'error',
+                    'message' => 'Error! failed to upload file'
+                ]
+            ]);
         }
     }
 

@@ -6,12 +6,11 @@ use App\Models\IndicatorCriteria;
 use App\Models\Period;
 use App\Models\Submission;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 
 class SubmissionController extends Controller
 {
-    public function form(Request $request, Period $period)
+    public function form(Request $request, Period $period, $page = 1)
     {
         $pivot = collect([]);
         $submission = Submission::with('indicators')
@@ -52,10 +51,23 @@ class SubmissionController extends Controller
                 'active' => $category->id === 1
             ];
         });
+
+        $all        = collect($questions->flatten(1));
+        $total      = $all->count();
+        $filled     = $all->filter(function ($question) {
+            $value = trim($question['value']);
+            return (is_numeric($value) && intval($value) >= 0);
+        })->values()->count();
+        $progress = number_format($filled / $total * 100, 2);
+
+        $inputs = $questions[$page] ?? $questions[1];
         return Inertia::render('SubmissionForm', [
-            'questions' => $questions,
+            'page' => $page,
+            'inputs' => $inputs,
             'period' => $period,
             'steps' => $steps,
+            'submission' => $submission,
+            'progress' => $progress
         ]);
     }
 
@@ -65,40 +77,60 @@ class SubmissionController extends Controller
             'user_id' => $request->user()->id,
             'period_id' => $period->id
         ]);
-        $evidences  = collect($request->all())->flatten(1);
-        $inputs     = collect($request->all())->map(function ($items) {
-            $data = collect($items)->map(function ($item) {
-                return collect($item)
-                    ->only(['value', 'indicator_id'])
-                    ->merge([
-                        'indicator_input_id' => $item['id']
-                    ]);
-            });
-            return $data;
-        })->flatten(1);
-        $indicators = $inputs->groupBy('indicator_id');
-        $submission->indicators()->syncWithoutDetaching($indicators->keys()->toArray());
-        $submission->indicators->each(function ($indicator) use ($indicators, $evidences) {
-            $values = $indicators->get($indicator->id);
-            if ($values) {
-                $values = $values->map(function ($value) {
-                    return collect($value)->except('indicator_id')->toArray();
-                });
-
+        $inputs = collect($request->all());
+        $submission->indicators()->syncWithoutDetaching($inputs->pluck('indicator_id')->toArray());
+        collect($submission->indicators)
+            ->filter(function ($indicator) use ($inputs) {
+                return $inputs->pluck('indicator_id')->contains($indicator->id);
+            })
+            ->values()
+            ->each(function ($indicator) use ($inputs) {
+                $values = collect($inputs)->where('indicator_id', $indicator->id)->values();
                 if ($indicator->pivot->values()->count() > 0) {
-                    $indicator->pivot->values()->whereIn('indicator_input_id', $values->pluck('indicator_input_id')->toArray())->delete();
+                    collect($indicator->pivot->values)->each(function ($item) use ($values) {
+                        $updated = $values->where('id', $item->indicator_input_id)->first();
+                        if ($updated['value'] ?? false) {
+                            $item->value = $updated['value'];
+                            $item->save();
+                        }
+                    });
+                } else {
+                    $values = $values->map(function ($value) {
+                        return collect($value)->merge(['indicator_input_id' => $value['id']]);
+                    });
+                    $indicator->pivot->values()->createMany($values->toArray());
                 }
-                $indicator->pivot->values()->createMany($values->toArray());
-                $findEvidence = $evidences->where('indicator_id', $indicator->id)->first();
-                if ($findEvidence['evidence'] instanceof UploadedFile) {
-                    $indicator->pivot->evidence()->create([
-                        'name' => $indicator->code,
-                        'file' => $findEvidence['evidence']->store('evidences', 'public')
-                    ]);
+                $files = $values->filter(function ($item) use ($indicator) {
+                    return (($item['evidence']['file'] ?? false) && $item['indicator_id'] === $indicator->id);
+                })->values();
+
+                if ($indicator->pivot->evidence()->count()) {
+                    if ($files->count() > 0) {
+                        $evidence = $files->first()['evidence'];
+                        $indicator->pivot->evidence()->update([
+                            'name' => $evidence['name'],
+                            'file' => $evidence['file']
+                        ]);
+                    } else {
+                        $indicator->pivot->evidence()->update([
+                            'name' => 'deleted',
+                            'file' => '0'
+                        ]);
+                    }
+                } else {
+                    if ($files->count() > 0) {
+                        $indicator->pivot
+                            ->evidence()
+                            ->create($files->first()['evidence']);
+                    }
                 }
-            }
-        });
-        return redirect()->back();
+            });
+        return redirect()->back()->with([
+            'alert' => [
+                'status' => 'success',
+                'message' => 'Success! your input stored'
+            ]
+        ]);
     }
 
     public function publish(Request $request, Period $period)
@@ -137,6 +169,27 @@ class SubmissionController extends Controller
         });
         $submission->publish = 1;
         $submission->save();
-        return redirect()->route('dashboard.submission');
+        return redirect()->route('dashboard.submission')->with([
+            'alert' => [
+                'status' => 'success',
+                'message' => 'Success! your submission submitted'
+            ]
+        ]);
+    }
+
+    public function upload(Request $request, Period $period)
+    {
+        $submission = Submission::firstOrCreate([
+            'user_id' => $request->user()->id,
+            'period_id' => $period->id
+        ]);
+        $indicator = $submission->indicators()->where('indicator_id', $request->get('indicator_id'))->first();
+        if ($indicator) {
+            $indicator->pivot->evidence()->create([
+                'name' => $indicator->code,
+                'file' => $request->get('file')
+            ]);
+        }
+        return redirect()->back();
     }
 }

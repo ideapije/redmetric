@@ -14,7 +14,8 @@ import {
     Link,
     SimpleGrid,
     Divider,
-    Icon
+    Icon,
+    Container
 } from '@chakra-ui/react';
 import { createClient } from '@supabase/supabase-js';
 import { FaRegEdit } from 'react-icons/fa';
@@ -63,7 +64,7 @@ export default function Dashboard({
             .createSignedUrl('public/redmetric1.jpg', 60);
         setImage(signedURL);
     }
-    
+
     return (
         <Authenticated
             auth={auth}
@@ -71,25 +72,30 @@ export default function Dashboard({
             header={<Title>{title || ''}</Title>}
         >
             <Head title={title || ''} />
-            <div className="container mx-auto my-5 p-5">
-                <div className="md:flex no-wrap md:-mx-2 ">
-                    <div className="w-full md:w-4/12 md:mx-2">
+            <div className="container mx-auto my-5 pl-5 pr-5">
+                <Flex
+                    w="full"
+                    gridColumnGap={4}
+                    align="start"
+                    justify="space-between"
+                    direction={{ base: "column", md: "row" }}
+                >
+                    <Box width={{ base: "full", md: "33.333333%" }}>
                         {
                             parseInt(auth?.user?.role_id, 10) === 3
                                 ? <JuryCard {...{ membership }} />
                                 : <UserCard {...{ membership, village }} />
                         }
-                    </div>
-
-                    <div className="w-full md:w-8/12 mx-2 bg-white p-3 border-t-4 h-full">
+                    </Box>
+                    <Box width={{ base: "full", md: "66.666667%" }} bg="white" p={3} borderTopWidth={4}>
                         {
                             parseInt(auth?.user?.role_id, 10) === 3
                                 ? <JuryForm {...{ membership, provinces, auth }} />
                                 : <ProfileForm {...{ membership, provinces, village, auth }} />
                         }
-                    </div>
-                </div>
+                    </Box>
+                </Flex>
             </div>
-        </Authenticated >
+        </Authenticated>
     );
 }

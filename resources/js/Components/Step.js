@@ -1,7 +1,8 @@
-import React from 'react'
-import classNames from 'classnames'
+import React from 'react';
+import classNames from 'classnames';
+import { GridItem, SimpleGrid, useBreakpointValue } from '@chakra-ui/react';
 
-export default function Step({ items }) {
+export default function Step({ items, page }) {
 
     const Item = ({ title, subtitle, active = false }) => (
         <div className={classNames(
@@ -23,11 +24,16 @@ export default function Step({ items }) {
             </p>
             <p className="font-semibold">{subtitle}</p>
         </div>
-    )
+    );
 
+    const columns = useBreakpointValue({ base: 1, md: 6 });
     return (
-        <div className="grid grid-cols-6 gap-4 w-3/4 m-auto pt-5">
-            {items && items.map((item, ix) => <Item {...item} key={ix} />)}
-        </div>
-    )
+        <SimpleGrid columnGap={4} w="75%" pt={5} m="auto" columns={columns}>
+            {items && items.map((item, ix) => (
+                <GridItem colSpan={1} key={ix}>
+                    <Item {...item} active={(ix + 1 === page)} />
+                </GridItem>
+            ))}
+        </SimpleGrid>
+    );
 }

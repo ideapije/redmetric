@@ -9,7 +9,6 @@ use App\Models\Submission;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Modules\Membership\Member;
-use stdClass;
 
 class JuryController extends Controller
 {
@@ -69,7 +68,10 @@ class JuryController extends Controller
             $member->user->save();
         }
         return redirect()->route('dashboard')->with([
-            'success' => 'Success! Profile is stored'
+            'alert' => [
+                'status' => 'success',
+                'message' => 'Success! your profile updated'
+            ]
         ]);
     }
 }

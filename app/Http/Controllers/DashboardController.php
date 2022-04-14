@@ -68,4 +68,10 @@ class DashboardController extends Controller
     {
         return response()->download(resource_path('docs/surat-pernyataan-peserta-red-metric.pdf'));
     }
+
+    public function destroyAlert(Request $request)
+    {
+        $request->session()->remove('alert');
+        return redirect()->back();
+    }
 }

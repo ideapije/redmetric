@@ -60,7 +60,7 @@ export default function Submission(props) {
                                             </Badge>
                                         </Td>
                                         <Td>
-                                            <Link href={route('dashboard.user.submission.form', s.id)}>
+                                            <Link href={route('dashboard.user.submission.form', { period: s, page: 1 })}>
                                                 <Button rightIcon={<ArrowForwardIcon />} size="sm" colorScheme="teal" variant="outline">
                                                     View
                                                 </Button>
